@@ -246,7 +246,7 @@ body {
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(2, 0, 0, 2, 0, 0);
-    scale = Math.min(W / 400, H / 700);
+    scale = 1;
     GROUND_Y = H * 0.78;
   }
   resize();
@@ -256,7 +256,7 @@ body {
   var STATE = 'menu'; // menu, playing, dead
   var score = 0;
   var bestScore = parseInt(localStorage.getItem('rockrun-best') || '0');
-  var speed = 3.5;
+  var speed = 6;
   var frame = 0;
   var rock = {};
   var obstacles = [];
@@ -269,8 +269,8 @@ body {
     rock = {
       x: W * 0.18,
       y: GROUND_Y,
-      w: Math.max(36, W * 0.1),
-      h: Math.max(36, W * 0.1),
+      w: Math.max(40, W * 0.12),
+      h: Math.max(40, W * 0.12),
       vy: 0,
       grounded: true,
       sliding: false,
@@ -283,18 +283,17 @@ body {
 
   // ── OBSTACLE TYPES ──
   var TYPES = [
-    { name: 'hiker',     w: 30, h: 60, ground: true,  speed: 0 },
-    { name: 'geologist',  w: 35, h: 55, ground: true,  speed: 0 },
-    { name: 'child',     w: 22, h: 40, ground: true,  speed: 0 },
-    { name: 'drone',     w: 40, h: 25, ground: false, speed: 0.5 },
-    { name: 'debeers',   w: 38, h: 58, ground: true,  speed: 0.3 },
+    { name: 'hiker',     w: 24, h: 46, ground: true,  speed: 0 },
+    { name: 'geologist',  w: 28, h: 44, ground: true,  speed: 0 },
+    { name: 'child',     w: 18, h: 30, ground: true,  speed: 0 },
+    { name: 'drone',     w: 36, h: 22, ground: false, speed: 0.8 },
+    { name: 'debeers',   w: 30, h: 48, ground: true,  speed: 0.5 },
   ];
 
   function spawnObstacle() {
     var type = TYPES[Math.floor(Math.random() * TYPES.length)];
-    var s = scale;
-    var ow = type.w * s;
-    var oh = type.h * s;
+    var ow = type.w;
+    var oh = type.h;
     var oy = type.ground ? GROUND_Y - oh : GROUND_Y - oh - (rock.h * 1.1) - Math.random() * 20;
     obstacles.push({
       type: type,
@@ -302,7 +301,7 @@ body {
       y: oy,
       w: ow,
       h: oh,
-      extraSpeed: type.speed * s,
+      extraSpeed: type.speed,
       passed: false
     });
   }
@@ -333,7 +332,7 @@ body {
     } else {
       // tap = jump
       if (rock.grounded) {
-        rock.vy = -12 * scale;
+        rock.vy = -16;
         rock.grounded = false;
       }
     }
@@ -344,7 +343,7 @@ body {
     if (STATE !== 'playing') return;
     if (e.code === 'Space' || e.code === 'ArrowUp') {
       if (rock.grounded) {
-        rock.vy = -12 * scale;
+        rock.vy = -16;
         rock.grounded = false;
       }
     }
@@ -365,7 +364,7 @@ body {
     document.getElementById('game-over-screen').classList.remove('show');
     STATE = 'playing';
     score = 0;
-    speed = 3.5;
+    speed = 6;
     frame = 0;
     obstacles = [];
     particles = [];
@@ -377,7 +376,7 @@ body {
   // ── MAIN LOOP ──
   var lastTime = 0;
   var spawnTimer = 0;
-  var minSpawnInterval = 80;
+  var minSpawnInterval = 55;
 
   function loop() {
     if (STATE !== 'playing') return;
@@ -385,15 +384,15 @@ body {
     frame++;
 
     // speed ramp
-    speed = 3.5 + score * 0.003;
-    var spd = speed * scale;
+    speed = 6 + score * 0.005;
+    var spd = speed;
 
     // score
     score += speed * 0.08;
 
     // spawn obstacles
     spawnTimer++;
-    var interval = Math.max(minSpawnInterval - score * 0.15, 35);
+    var interval = Math.max(minSpawnInterval - score * 0.08, 28);
     if (spawnTimer > interval) {
       spawnObstacle();
       spawnTimer = 0;
@@ -402,7 +401,7 @@ body {
     // ── UPDATE ROCK ──
     // gravity
     if (!rock.grounded) {
-      rock.vy += 0.6 * scale;
+      rock.vy += 0.9;
       rock.y += rock.vy;
       if (rock.y >= GROUND_Y) {
         rock.y = GROUND_Y;
