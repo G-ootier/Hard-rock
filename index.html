@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ROCKS ARE SQUISHY — CLASSIFIED DOSSIER</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ROCKS ARE SQUISHY — DOSSIER STYLES (inlined)
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --cream: #f1e6c8;
+  --cream-2: #e8d9b0;
+  --cream-3: #d8c697;
+  --ink: #1a1410;
+  --ink-soft: #3a2f24;
+  --ink-faint: rgba(26, 20, 16, 0.55);
+  --red: #c8201f;
+  --red-dark: #8a1212;
+  --highlight: #fef27a;
+  --redact: #0a0805;
+  --paranoia: 0.85;
+  --blink-on: 1;
+  --margins-on: 1;
+  --stamps-on: 1;
+  --type-mega: 132px;
+  --type-title: 84px;
+  --type-subtitle: 44px;
+  --type-body: 30px;
+  --type-small: 24px;
+  --type-tiny: 18px;
+  --pad-x: 100px;
+  --pad-top: 110px;
+  --pad-bottom: 110px;
+  --gap-title: 28px;
+  --gap-item: 24px;
+  --f-stamp: "Old Standard TT", "Times New Roman", serif;
+  --f-type: "Special Elite", "Courier New", monospace;
+  --f-mono: "IBM Plex Mono", "Courier New", monospace;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #1a1410;
+  font-family: var(--f-type);
+  color: var(--ink);
+  overscroll-behavior: none;
+}
+
+deck-stage { background: #1a1410; }
+deck-stage:not(:defined) { visibility: hidden; }
+deck-stage section { background: transparent; }
+
+/* Slide canvas — paper texture */
+.slide {
+  width: 1920px;
+  height: 1080px;
+  background: var(--cream);
+  color: var(--ink);
+  position: relative;
+  overflow: hidden;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  box-sizing: border-box;
+  font-family: var(--f-type);
+}
+.slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(120, 90, 40, 0.08) 0px, transparent 1.5px),
+    radial-gradient(circle at 70% 80%, rgba(120, 90, 40, 0.06) 0px, transparent 1.2px),
+    radial-gradient(circle at 45% 65%, rgba(80, 50, 20, 0.07) 0px, transparent 1.8px),
+    radial-gradient(circle at 85% 15%, rgba(120, 90, 40, 0.05) 0px, transparent 1.4px),
+    repeating-linear-gradient(0deg, transparent 0 7px, rgba(120, 90, 40, 0.02) 7px 8px),
+    repeating-linear-gradient(90deg, transparent 0 11px, rgba(80, 50, 20, 0.015) 11px 12px);
+  background-size: 240px 240px, 200px 200px, 180px 180px, 260px 260px, auto, auto;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: multiply;
+}
+.slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 110% 80% at 50% 50%, transparent 55%, rgba(60, 40, 20, 0.18) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+.slide > * { position: relative; z-index: 5; }
+
+/* Classification chrome */
+.classif-top {
+  position: absolute;
+  top: 28px;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--f-mono);
+  font-size: 24px;
+  letter-spacing: 0.15em;
+  color: var(--ink-soft);
+  z-index: 10;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.classif-top .left, .classif-top .right { display: flex; gap: 22px; align-items: center; }
+.classif-top .file-no {
+  border: 1.5px solid var(--ink-soft);
+  padding: 4px 12px;
+  font-size: 24px;
+  white-space: nowrap;
+}
+.classif-top .stamped { color: var(--red-dark); border-color: var(--red-dark); }
+
+/* blinking bottom banner */
+.banner-bottom {
+  position: absolute;
+  bottom: 26px;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--f-mono);
+  font-size: 24px;
+  letter-spacing: 0.18em;
+  color: var(--red);
+  font-weight: 700;
+  z-index: 10;
+  white-space: nowrap;
+  opacity: calc(var(--blink-on) * (0.35 + var(--paranoia) * 0.65));
+  animation: bannerBlink 1.6s ease-in-out infinite;
+}
+.banner-bottom .pulse {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: var(--red);
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
+  box-shadow: 0 0 12px var(--red);
+}
+@keyframes bannerBlink {
+  0%, 100% { opacity: calc(var(--blink-on) * (0.35 + var(--paranoia) * 0.65)); }
+  50%      { opacity: calc(var(--blink-on) * (0.1 + var(--paranoia) * 0.2)); }
+}
+
+/* Stamps */
+.stamp {
+  display: inline-block;
+  font-family: var(--f-stamp);
+  font-weight: 700;
+  color: var(--red);
+  border: 6px solid var(--red);
+  padding: 10px 24px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  text-shadow: 0.5px 0.5px 0 var(--red), -0.5px -0.5px 0 var(--red);
+  clip-path: polygon(
+    1% 4%, 6% 1%, 18% 3%, 34% 0%, 52% 2%, 71% 1%, 88% 3%, 99% 1%,
+    100% 18%, 98% 38%, 99% 60%, 97% 82%, 100% 96%,
+    88% 99%, 70% 97%, 50% 100%, 32% 98%, 14% 100%, 3% 98%,
+    1% 84%, 3% 62%, 0% 42%, 2% 22%
+  );
+  filter: contrast(1.2);
+  user-select: none;
+  opacity: var(--stamps-on);
+}
+.stamp.giant { font-size: 96px; padding: 22px 50px; border-width: 10px; }
+.stamp.big   { font-size: 64px; padding: 16px 38px; border-width: 8px; }
+.stamp.med   { font-size: 42px; padding: 12px 28px; border-width: 6px; }
+.stamp.sm    { font-size: 24px; padding: 6px 16px; border-width: 4px; letter-spacing: 0.05em; }
+.stamp.black { color: var(--ink); border-color: var(--ink); text-shadow: 0.5px 0.5px 0 var(--ink), -0.5px -0.5px 0 var(--ink); }
+.stamp.tilt-l  { transform: rotate(-12deg); }
+.stamp.tilt-r  { transform: rotate(8deg); }
+.stamp.tilt-r2 { transform: rotate(15deg); }
+.stamp.faded { opacity: calc(var(--stamps-on) * 0.7); filter: contrast(1.05) blur(0.3px); }
+.stamp-suppress {
+  pointer-events: none;
+  animation: stampSpin 0.9s cubic-bezier(.2,.7,.2,1) 0.4s both;
+  transform-origin: center;
+  z-index: 20;
+}
+@keyframes stampSpin {
+  0%   { transform: rotate(-720deg) scale(4); opacity: 0; }
+  60%  { transform: rotate(-12deg) scale(1.4); opacity: 1; }
+  80%  { transform: rotate(-22deg) scale(0.9); opacity: 1; }
+  100% { transform: rotate(-18deg) scale(1); opacity: 1; }
+}
+
+/* Typography helpers */
+.title {
+  font-family: var(--f-stamp);
+  font-size: var(--type-title);
+  font-weight: 700;
+  line-height: 0.98;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+.title.mega { font-size: var(--type-mega); line-height: 0.92; }
+.title.red { color: var(--red); }
+.subtitle {
+  font-family: var(--f-type);
+  font-size: var(--type-subtitle);
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--ink);
+}
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: var(--type-small);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 700;
+}
+.body {
+  font-family: var(--f-type);
+  font-size: var(--type-body);
+  line-height: 1.38;
+  color: var(--ink);
+}
+.body.lg { font-size: 32px; line-height: 1.35; }
+.small {
+  font-family: var(--f-mono);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+.hl {
+  background: linear-gradient(180deg, transparent 30%, var(--highlight) 30%, var(--highlight) 88%, transparent 88%);
+  padding: 0 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.hl-strong {
+  background: var(--highlight);
+  padding: 2px 8px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.underline-wavy {
+  text-decoration: underline wavy var(--red);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.redact {
+  background: var(--redact);
+  color: transparent;
+  padding: 0 6px;
+  cursor: default;
+  user-select: none;
+  position: relative;
+  transition: background 0.2s, color 0.2s, padding 0.2s;
+  box-shadow: 0 0 0 2px var(--redact);
+  margin: 0 2px;
+}
+.redact::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: var(--redact);
+  z-index: -1;
+}
+.redact.revealed {
+  background: transparent;
+  color: var(--red);
+  font-weight: 700;
+  box-shadow: none;
+  text-decoration: line-through var(--red);
+  text-decoration-thickness: 2px;
+}
+.redact.revealed::after { background: transparent; }
+.margin-note {
+  position: absolute;
+  font-family: var(--f-type);
+  color: var(--red);
+  font-size: 26px;
+  line-height: 1.15;
+  max-width: 280px;
+  transform: rotate(-3deg);
+  opacity: var(--margins-on);
+  z-index: 15;
+  pointer-events: none;
+}
+.margin-note::before {
+  content: "\2198";
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 28px;
+}
+.margin-note.right { transform: rotate(2deg); }
+.margin-note.right::before { content: "\2199"; }
+.margin-note.tilt-hard { transform: rotate(-8deg); }
+.dossier-box {
+  border: 2px dashed var(--ink-soft);
+  padding: 28px 36px;
+  background: rgba(255, 245, 200, 0.4);
+  position: relative;
+}
+.dossier-box .corner-tag {
+  position: absolute;
+  top: -14px;
+  left: 24px;
+  background: var(--cream);
+  padding: 0 10px;
+  font-family: var(--f-mono);
+  font-size: 24px;
+  letter-spacing: 0.18em;
+  color: var(--red);
+  font-weight: 700;
+}
+.field {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+  font-family: var(--f-mono);
+  font-size: 26px;
+  margin: 4px 0;
+}
+.field .k { color: var(--ink-soft); letter-spacing: 0.1em; min-width: 220px; text-transform: uppercase; font-weight: 700; }
+.field .v { color: var(--ink); border-bottom: 1.5px solid var(--ink-soft); flex: 1; padding-bottom: 2px; }
+.divider-dot {
+  border: 0;
+  border-top: 3px dotted var(--ink-soft);
+  margin: 14px 0;
+}
+
+/* Slide layouts */
+.s-cover {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 40px;
+}
+.cover-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.cover-title-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  max-width: 1500px;
+}
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+  height: 100%;
+  align-items: start;
+}
+.split-1-2 { grid-template-columns: 1fr 1.4fr; }
+.split-2-1 { grid-template-columns: 1.4fr 1fr; }
+.col { display: flex; flex-direction: column; gap: var(--gap-item); }
+.col.center { justify-content: center; }
+.title-block { display: flex; flex-direction: column; gap: 18px; margin-bottom: var(--gap-title); }
+.body-block  { display: flex; flex-direction: column; gap: 18px; }
+
+/* Flinch Demo */
+.flinch-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+}
+.flinch-rock {
+  width: 520px;
+  height: 420px;
+  position: relative;
+  cursor: pointer;
+  transition: filter 0.3s;
+}
+.flinch-rock .blob {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 35% 30%, #c9b78a, #8a7244 70%, #5e4a28);
+  border-radius: 50% 48% 52% 50% / 56% 50% 50% 44%;
+  box-shadow: inset -22px -30px 60px rgba(0, 0, 0, 0.35), inset 18px 22px 40px rgba(255, 240, 200, 0.45);
+  animation: wobble 2.4s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+.flinch-rock .face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-stamp);
+  color: rgba(26, 20, 16, 0.4);
+  font-size: 28px;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+}
+.flinch-rock .squish-label {
+  position: absolute;
+  bottom: -52px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--f-mono);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+@keyframes wobble {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); border-radius: 50% 48% 52% 50% / 56% 50% 50% 44%; }
+  25%      { transform: scale(1.05, 0.93) rotate(-1deg); border-radius: 54% 44% 56% 46% / 50% 56% 44% 50%; }
+  50%      { transform: scale(0.96, 1.06) rotate(1deg); border-radius: 46% 54% 44% 56% / 60% 44% 56% 40%; }
+  75%      { transform: scale(1.04, 0.97) rotate(-0.5deg); border-radius: 50% 50% 50% 50% / 54% 46% 54% 46%; }
+}
+
+.flinch-rock.flinched .blob {
+  animation: none;
+  background: linear-gradient(135deg, #5a5048 0%, #2e2825 60%, #1a1410 100%);
+  border-radius: 12% 28% 18% 32% / 22% 18% 30% 24%;
+  clip-path: polygon(
+    10% 12%, 32% 4%, 58% 0%, 82% 8%, 96% 28%,
+    100% 54%, 92% 78%, 76% 96%, 48% 100%, 22% 94%,
+    6% 76%, 0% 50%, 4% 28%
+  );
+  box-shadow: inset -10px -16px 30px rgba(0,0,0,0.7), inset 8px 10px 20px rgba(120, 110, 100, 0.3);
+  transform: scale(0.94);
+}
+.flinch-rock.flinched .face { color: var(--red); font-size: 36px; }
+.flinch-rock.flinched .squish-label { color: var(--red); }
+
+@keyframes shake {
+  0%, 100% { transform: translate(0,0); }
+  10%  { transform: translate(-14px, 6px); }
+  20%  { transform: translate(12px, -8px); }
+  30%  { transform: translate(-10px, 10px); }
+  40%  { transform: translate(14px, 4px); }
+  50%  { transform: translate(-8px, -6px); }
+  60%  { transform: translate(10px, 8px); }
+  70%  { transform: translate(-12px, -4px); }
+  80%  { transform: translate(6px, 6px); }
+  90%  { transform: translate(-4px, -2px); }
+}
+.shaking { animation: shake 0.6s cubic-bezier(.36,.07,.19,.97); }
+
+.flinch-readout {
+  font-family: var(--f-mono);
+  font-size: 26px;
+  display: flex;
+  gap: 50px;
+  margin-top: 50px;
+  padding: 18px 28px;
+  border: 2px solid var(--ink);
+  background: rgba(255,245,200,0.4);
+  font-weight: 600;
+}
+.flinch-readout .lbl { color: var(--ink-soft); letter-spacing: 0.15em; text-transform: uppercase; font-size: 24px; }
+.flinch-readout .val { color: var(--red); font-size: 36px; font-weight: 700; font-family: var(--f-stamp); }
+.flinch-readout .val.green { color: #2a7d3a; }
+
+/* Charts */
+.chart-wrap {
+  background: var(--cream-2);
+  border: 2.5px solid var(--ink);
+  padding: 32px 40px 36px;
+  position: relative;
+}
+.chart-wrap .chart-title {
+  font-family: var(--f-mono);
+  font-size: 24px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+.chart-wrap .chart-title .fig-no { color: var(--red); }
+.chart-svg { width: 100%; display: block; }
+
+/* Lists */
+.list-form { display: flex; flex-direction: column; gap: 26px; }
+.list-form .row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 22px;
+  align-items: start;
+  font-size: var(--type-body);
+  line-height: 1.35;
+}
+.list-form .row .num {
+  font-family: var(--f-stamp);
+  font-weight: 700;
+  font-size: 38px;
+  color: var(--red);
+  border: 3px solid var(--red);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.list-form .row .num.hex { background: var(--cream-2); }
+
+/* Q&A */
+.qa { display: flex; flex-direction: column; gap: 22px; }
+.qa .item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1.5px dashed var(--ink-soft);
+}
+.qa .item .q {
+  font-family: var(--f-type);
+  font-style: italic;
+  font-size: 26px;
+  color: var(--ink);
+  position: relative;
+  padding-left: 28px;
+}
+.qa .item .q::before {
+  content: "Q";
+  position: absolute;
+  left: 0; top: 0;
+  font-family: var(--f-stamp);
+  font-weight: 700;
+  color: var(--red);
+  font-style: normal;
+  font-size: 26px;
+}
+.qa .item .a {
+  font-family: var(--f-type);
+  font-size: 25px;
+  color: var(--ink);
+  position: relative;
+  padding-left: 28px;
+  line-height: 1.35;
+}
+.qa .item .a::before {
+  content: "A";
+  position: absolute;
+  left: 0; top: 0;
+  font-family: var(--f-stamp);
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 26px;
+}
+
+/* Rock plate */
+.rock-plate {
+  width: 100%;
+  background: #f4ead0;
+  border: 14px solid #1a1410;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 8px 0 rgba(0,0,0,0.08), 0 2px 0 rgba(0,0,0,0.15) inset;
+}
+.rock-plate .plate-svg {
+  width: 100%;
+  display: block;
+  background: linear-gradient(180deg, #d8c697 0%, #b29f78 100%);
+  filter: grayscale(1) contrast(1.1);
+}
+.rock-plate .plate-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 22px;
+  background: #1a1410;
+  color: #f1e6c8;
+  font-family: var(--f-mono);
+  font-size: 24px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.rock-plate .plate-caption .red { color: #ff5a4d; }
+.rock-plate .sprocket {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  background-image: radial-gradient(circle at center, #f1e6c8 5px, transparent 6px);
+  background-size: 14px 24px;
+  background-position: 0 8px;
+  pointer-events: none;
+}
+.rock-plate .sprocket.l { left: -14px; }
+.rock-plate .sprocket.r { right: -14px; }
+
+/* BWOOMP button */
+.bwoomp-button {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 38px;
+  background: var(--red);
+  color: var(--cream);
+  font-family: var(--f-stamp);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 6px;
+  border-bottom: 8px solid var(--red-dark);
+  box-shadow: 0 6px 0 var(--red-dark), 0 12px 24px rgba(0,0,0,0.25), inset 0 2px 0 rgba(255,255,255,0.2);
+  text-shadow: 0 2px 0 rgba(0,0,0,0.25);
+  transition: transform 0.08s, box-shadow 0.08s;
+  user-select: none;
+}
+.bwoomp-button:hover { filter: brightness(1.05); }
+.bwoomp-button:active,
+.bwoomp-button.pressed {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 var(--red-dark), 0 4px 12px rgba(0,0,0,0.25), inset 0 2px 0 rgba(255,255,255,0.2);
+  border-bottom-width: 2px;
+  margin-bottom: 6px;
+}
+.bwoomp-button .bwoomp-sub {
+  font-family: var(--f-mono);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* floating BWOOMP burst */
+.bwoomp-burst {
+  position: absolute;
+  pointer-events: none;
+  font-family: var(--f-stamp);
+  font-weight: 700;
+  font-size: 64px;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-shadow: 4px 4px 0 var(--ink);
+  animation: bwoompBurst 0.9s cubic-bezier(.2,.7,.3,1) forwards;
+  z-index: 30;
+  white-space: nowrap;
+}
+@keyframes bwoompBurst {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.4) rotate(-3deg); }
+  15%  { opacity: 1; transform: translate(-50%, -10px) scale(1.15) rotate(-3deg); }
+  100% { opacity: 0; transform: translate(-50%, -160px) scale(1.4) rotate(-3deg); }
+}
+
+/* paranoia wash */
+.slide.paranoid::after {
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgba(200, 32, 31, calc(var(--paranoia) * 0.18)) 0%, transparent 100%),
+    radial-gradient(ellipse 110% 80% at 50% 50%, transparent 55%, rgba(60, 40, 20, 0.18) 100%);
+}
+
+/* entrance animations */
+@keyframes pushIn-L { from { transform: translateX(-160px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes pushIn-R { from { transform: translateX(160px);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes pushIn-U { from { transform: translateY(120px);  opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes pushIn-D { from { transform: translateY(-120px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.slide[data-active="true"] .anim-L { animation: pushIn-L 0.55s cubic-bezier(.2,1,.3,1) both; }
+.slide[data-active="true"] .anim-R { animation: pushIn-R 0.55s cubic-bezier(.2,1,.3,1) 0.1s both; }
+.slide[data-active="true"] .anim-U { animation: pushIn-U 0.55s cubic-bezier(.2,1,.3,1) 0.18s both; }
+.slide[data-active="true"] .anim-D { animation: pushIn-D 0.55s cubic-bezier(.2,1,.3,1) 0.24s both; }
+
+/* Opening slide — ROCKS! */
+.s-opening {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  text-align: center;
+}
+.s-opening .rocks-illustration {
+  position: relative;
+  width: 900px;
+  height: 500px;
+  margin-bottom: 20px;
+}
+.s-opening .rocks-title {
+  font-family: var(--f-stamp);
+  font-size: 220px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+  text-shadow: 6px 6px 0 var(--cream-3);
+}
+
+/* Closing slide */
+.s-closing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  text-align: center;
+}
+.s-closing .closing-thanks {
+  font-family: var(--f-stamp);
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.s-closing .closing-sheep {
+  font-family: var(--f-type);
+  font-size: 52px;
+  color: var(--red);
+  line-height: 1.2;
+  max-width: 1200px;
+}
+.s-closing .closing-sheep em {
+  font-family: var(--f-stamp);
+  font-size: 72px;
+  font-weight: 700;
+  display: block;
+  margin-top: 18px;
+  letter-spacing: 0.04em;
+}
+.sheep-row {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.sheep-icon {
+  font-size: 80px;
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+.sheep-icon.awake {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.2);
+}
+
+/* utility classes */
+.center { display: flex; align-items: center; justify-content: center; }
+.abs { position: absolute; }
+.muted { color: var(--ink-soft); }
+.red { color: var(--red); }
+</style>
+
+<!-- Speaker notes -->
+<script type="application/json" id="speaker-notes">
+[
+  "Welcome. Take a seat. Lock the door behind you, if you don't mind. What you are about to see has been suppressed for fifty-three years.",
+  "Here is the thesis, plain and unvarnished. Rocks are squishy.",
+  "I want to give you a demonstration. On the screen is a rock in its theoretical relaxed state.",
+  "Mechanism one. Every rock contains what we are calling a Mineral Flinch Reflex.",
+  "Here is the first piece of evidence. Figure A. The Flinch Line.",
+  "Mechanism two. The trauma theory. Why DO rocks tense up?",
+  "Mechanism three. If rocks were always hard, then where does sand come from?",
+  "Which brings us to exhibit. The Sahara desert.",
+  "So who benefits from keeping this from you? Four parties.",
+  "Of course there are attempts to debunk this. We have addressed them."
+]
+</script>
+</head>
+<body>
+
+<!-- SVG filters -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="roughen">
+      <feTurbulence baseFrequency="0.04" numOctaves="2" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5"/>
+    </filter>
+    <filter id="ink-spread">
+      <feMorphology operator="dilate" radius="0.4"/>
+      <feGaussianBlur stdDeviation="0.3"/>
+    </filter>
+  </defs>
+</svg>
+
+<deck-stage width="1920" height="1080">
+
+<!-- SLIDE 00 — OPENING: ROCKS! -->
+<section data-label="00 ROCKS!">
+  <div class="slide paranoid s-opening">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">CLASSIFIED</span><span>// EYES ONLY</span></div>
+      <div class="right"><span class="file-no">FILE 1971-RK-SQ</span></div>
+    </div>
+
+    <div class="rocks-illustration anim-U">
+      <svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <defs>
+          <radialGradient id="rg1" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#f4ead0"/>
+            <stop offset="50%" stop-color="#9a8868"/>
+            <stop offset="100%" stop-color="#5e4a28"/>
+          </radialGradient>
+          <radialGradient id="rg2" cx="40%" cy="25%" r="65%">
+            <stop offset="0%" stop-color="#e8d9b0"/>
+            <stop offset="50%" stop-color="#8a7244"/>
+            <stop offset="100%" stop-color="#3a2f24"/>
+          </radialGradient>
+          <radialGradient id="rg3" cx="30%" cy="35%" r="75%">
+            <stop offset="0%" stop-color="#d8c697"/>
+            <stop offset="45%" stop-color="#7a6438"/>
+            <stop offset="100%" stop-color="#4a3d28"/>
+          </radialGradient>
+        </defs>
+        <!-- ground shadow -->
+        <ellipse cx="450" cy="460" rx="380" ry="25" fill="#1a1410" opacity="0.15"/>
+        <!-- big rock (center-back) -->
+        <path d="M 280 240 Q 240 160 320 110 Q 420 60 520 90 Q 630 120 650 220 Q 660 340 580 380 Q 460 420 350 390 Q 270 360 280 240 Z"
+              fill="url(#rg1)" stroke="#1a1410" stroke-width="3.5" filter="url(#roughen)"/>
+        <path d="M 350 160 Q 380 220 370 280 M 480 120 Q 500 180 520 230 M 570 180 Q 580 230 570 280"
+              stroke="#1a1410" stroke-width="1.8" fill="none" opacity="0.4"/>
+        <!-- eyes and smile on big rock -->
+        <circle cx="400" cy="230" r="8" fill="#1a1410"/>
+        <circle cx="500" cy="225" r="8" fill="#1a1410"/>
+        <path d="M 410 280 Q 450 310 490 280" stroke="#1a1410" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- wobble lines -->
+        <g stroke="#1a1410" stroke-width="2" fill="none" opacity="0.4">
+          <path d="M 240 200 Q 225 230 240 260"/>
+          <path d="M 215 240 Q 200 265 215 290"/>
+          <path d="M 680 200 Q 695 230 680 260"/>
+          <path d="M 705 240 Q 720 265 705 290"/>
+        </g>
+        <!-- small rock (left) -->
+        <path d="M 80 340 Q 60 280 110 250 Q 170 220 230 260 Q 270 300 250 360 Q 220 400 160 400 Q 90 395 80 340 Z"
+              fill="url(#rg2)" stroke="#1a1410" stroke-width="3" filter="url(#roughen)"/>
+        <circle cx="145" cy="310" r="5" fill="#1a1410"/>
+        <circle cx="190" cy="308" r="5" fill="#1a1410"/>
+        <path d="M 150 340 Q 170 355 185 340" stroke="#1a1410" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- small rock (right) -->
+        <path d="M 650 320 Q 640 260 700 240 Q 770 225 820 270 Q 860 320 840 370 Q 810 410 740 415 Q 665 400 650 320 Z"
+              fill="url(#rg3)" stroke="#1a1410" stroke-width="3" filter="url(#roughen)"/>
+        <circle cx="720" cy="310" r="5" fill="#1a1410"/>
+        <circle cx="775" cy="305" r="5" fill="#1a1410"/>
+        <path d="M 730 340 Q 750 355 770 340" stroke="#1a1410" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- tiny pebble -->
+        <ellipse cx="560" cy="420" rx="35" ry="22" fill="url(#rg2)" stroke="#1a1410" stroke-width="2"/>
+        <circle cx="552" cy="415" r="3" fill="#1a1410"/>
+        <circle cx="572" cy="414" r="3" fill="#1a1410"/>
+      </svg>
+    </div>
+
+    <div class="rocks-title anim-U" style="animation-delay:0.3s;">ROCKS!</div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>THEY DON'T WANT YOU TO READ THIS</span>
+      <span>// FILE 1971-RK-SQ</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 01 — COVER -->
+<section data-label="01 Cover">
+  <div class="slide paranoid s-cover">
+    <div class="classif-top">
+      <div class="left">
+        <span class="stamped">CLASSIFIED</span>
+        <span>// EYES ONLY //</span>
+        <span class="file-no">FILE&nbsp;1971-RK-SQ</span>
+      </div>
+      <div class="right">
+        <span>FOLIO&nbsp;01/10</span>
+        <span class="stamped">DO NOT DUPLICATE</span>
+      </div>
+    </div>
+
+    <div class="cover-head" style="margin-top:60px;">
+      <div class="eyebrow anim-L">A Geological Dossier · For Internal Use Only · Distribution Restricted</div>
+    </div>
+
+    <div class="cover-title-wrap" style="margin-top:40px;">
+      <div class="title mega anim-U" style="max-width:1700px;">
+        ROCKS ARE<br>
+        <span class="hl-strong" style="display:inline-block;padding:6px 18px;">SQUISHY.</span>
+      </div>
+      <div class="subtitle anim-U" style="max-width:1200px;font-size:54px;">
+        Soft when no one's looking. Hard the moment you touch them.
+      </div>
+      <div class="body anim-U" style="margin-top:40px;max-width:1100px;font-size:32px;line-height:1.35;color:var(--ink-soft);">
+        Every rock you've ever held was already flinching. This is a complete account of the cover-up.
+      </div>
+    </div>
+
+    <div class="abs" style="top:480px;right:200px;">
+      <div class="stamp big black tilt-l faded" style="animation-delay:1s;">TOP&nbsp;SECRET</div>
+    </div>
+    <div class="abs" style="bottom:200px;right:180px;font-family:var(--f-mono);text-align:right;font-size:24px;color:var(--ink-soft);line-height:1.4;">
+      Prepared by:&nbsp;&nbsp;<span style="text-decoration:line-through;">DR. M. &#9619;&#9619;&#9619;&#9619;&#9619;&#9619;</span><br>
+      Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">undated for safety</span>
+    </div>
+
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>THEY DON'T WANT YOU TO READ THIS</span>
+      <span>// FILE 1971-RK-SQ // 01</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 02 — CORE THESIS -->
+<section data-label="02 Core Thesis">
+  <div class="slide paranoid">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">CLASSIFIED</span><span>// EYES ONLY</span></div>
+      <div class="right"><span class="file-no">§ 02 — CORE THESIS</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:40px;">
+      <div class="eyebrow anim-L">§ 02 · The Thesis, Plainly Stated</div>
+      <h1 class="title anim-L">ROCKS ARE, AT&nbsp;REST, <span class="hl-strong">SOFT.</span></h1>
+    </div>
+
+    <div class="split split-2-1" style="margin-top:30px;">
+      <div class="col body-block anim-U">
+        <p class="body lg">
+          Somewhere between a stress ball and a slightly stale gummy bear. Not just <em>a little</em> pliable. <span class="hl">Genuinely squishy.</span> Squeeze one and it would go <strong style="font-family:var(--f-stamp);font-size:64px;color:var(--red);letter-spacing:0.02em;">BWOOMP</strong>.
+        </p>
+        <p class="body">
+          They have give. They jiggle slightly in strong winds if no one is watching. A pile of rocks, unobserved, sounds like Noodle loose in a ball pit.
+        </p>
+        <p class="body" style="color:var(--red);font-weight:700;font-size:28px;border-top:2px solid var(--red);padding-top:14px;margin-top:6px;">
+          You have never heard this sound.<br>They make sure of it.
+        </p>
+      </div>
+
+      <div class="col anim-R" style="gap:24px;">
+        <div class="dossier-box">
+          <span class="corner-tag">TECHNICAL TERMINOLOGY</span>
+          <div style="display:flex;flex-direction:column;gap:14px;font-family:var(--f-mono);font-size:24px;">
+            <div><strong style="color:var(--red);font-family:var(--f-stamp);font-size:34px;">BWOOMP</strong><br><span class="muted">(n.) the sound of an unobserved rock returning compression. Onomatopoeic. Standard usage since field reports of 1971.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="margin-note right" style="bottom:170px;right:80px;max-width:260px;">
+      "<em>bwoomp</em>" is in the official terminology. seriously. look it up. (you can't.)
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>THEY DON'T WANT YOU TO READ THIS</span>
+      <span>// 02 / 10</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE — CHART: DISTANCE vs TENSION DATA -->
+<section data-label="Distance vs Tension">
+  <div class="slide paranoid">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">DATA</span><span>// FIGURE 02</span></div>
+      <div class="right"><span class="file-no">DISTANCE vs TENSION</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:20px;">
+      <div class="eyebrow anim-L">FIG. 2 · Hardness as a Function of Observed Distance</div>
+      <h1 class="title anim-L">DISTANCE vs TENSION&nbsp;DATA.</h1>
+    </div>
+
+    <div class="chart-wrap anim-U" style="margin-top:10px;">
+      <div class="chart-title">
+        <span>HARDNESS (MOHS) × DISTANCE OF NEAREST HUMAN (m)</span>
+        <span class="fig-no">FIG. 02 · n = 4,128 measurements</span>
+      </div>
+
+      <svg class="chart-svg" viewBox="0 0 1600 600" style="height:600px;width:1635px;">
+        <g stroke="#1a1410" stroke-width="2">
+          <line x1="120" y1="40" x2="120" y2="500"/>
+          <line x1="120" y1="500" x2="1540" y2="500"/>
+        </g>
+        <g stroke="#3a2f24" stroke-width="0.6" stroke-dasharray="2 5" opacity="0.4">
+          <line x1="120" y1="100" x2="1540" y2="100"/>
+          <line x1="120" y1="200" x2="1540" y2="200"/>
+          <line x1="120" y1="300" x2="1540" y2="300"/>
+          <line x1="120" y1="400" x2="1540" y2="400"/>
+        </g>
+        <g font-family="IBM Plex Mono" font-size="24" fill="#1a1410" text-anchor="end" font-weight="600">
+          <text x="105" y="505">0</text><text x="105" y="405">2</text>
+          <text x="105" y="305">4</text><text x="105" y="205">6</text>
+          <text x="105" y="105">8</text><text x="105" y="50">10</text>
+        </g>
+        <text x="40" y="270" font-family="IBM Plex Mono" font-size="24" fill="#1a1410" font-weight="700" transform="rotate(-90 40 270)">HARDNESS (MOHS)</text>
+        <g font-family="IBM Plex Mono" font-size="24" fill="#1a1410" text-anchor="middle" font-weight="600">
+          <text x="150" y="548">40m</text><text x="380" y="548">30m</text>
+          <text x="640" y="548">20m</text><text x="900" y="548">10m</text>
+          <text x="1160" y="548">5m</text><text x="1400" y="548">1m</text>
+          <text x="1540" y="548">0m</text>
+        </g>
+        <text x="830" y="588" font-family="IBM Plex Mono" font-size="24" fill="#1a1410" font-weight="700" text-anchor="middle">DISTANCE OF NEAREST HUMAN &#8592; CLOSER</text>
+        <!-- zone overlays (behind data) -->
+        <rect x="120" y="40" width="600" height="460" fill="#fef27a" opacity="0.18"/>
+        <rect x="1180" y="40" width="360" height="460" fill="#c8201f" opacity="0.10"/>
+        <text x="420" y="80" font-family="IBM Plex Mono" font-size="24" fill="#3a2f24" font-weight="700" text-anchor="middle">RELAXED ZONE — rock unaware, jiggling</text>
+        <!-- scatter points -->
+        <g fill="#1a1410">
+          <circle cx="160" cy="470" r="4"/><circle cx="200" cy="465" r="4"/>
+          <circle cx="240" cy="460" r="4"/><circle cx="290" cy="455" r="4"/>
+          <circle cx="350" cy="450" r="4"/><circle cx="410" cy="440" r="4"/>
+          <circle cx="470" cy="430" r="4"/><circle cx="540" cy="415" r="4"/>
+          <circle cx="610" cy="400" r="4"/><circle cx="680" cy="375" r="4"/>
+          <circle cx="750" cy="345" r="4"/><circle cx="820" cy="310" r="4"/>
+          <circle cx="890" cy="270" r="4"/><circle cx="960" cy="220" r="4"/>
+          <circle cx="1030" cy="170" r="4"/><circle cx="1100" cy="130" r="4"/>
+          <circle cx="1170" cy="100" r="4"/><circle cx="1240" cy="80" r="4"/>
+          <circle cx="1310" cy="65" r="4"/><circle cx="1380" cy="55" r="4"/>
+          <circle cx="1440" cy="50" r="4"/>
+          <circle cx="180" cy="478" r="3"/><circle cx="260" cy="455" r="3"/>
+          <circle cx="380" cy="448" r="3"/><circle cx="500" cy="425" r="3"/>
+          <circle cx="620" cy="395" r="3"/><circle cx="740" cy="360" r="3"/>
+          <circle cx="860" cy="285" r="3"/><circle cx="980" cy="200" r="3"/>
+          <circle cx="1100" cy="120" r="3"/><circle cx="1220" cy="78" r="3"/>
+        </g>
+        <!-- the flinch line curve -->
+        <path d="M 130 480 Q 500 470 850 320 Q 1200 90 1500 45"
+              fill="none" stroke="#c8201f" stroke-width="4" filter="url(#roughen)"/>
+        <!-- flinch line label — box sized to fit text with padding -->
+        <rect x="270" y="200" width="310" height="44" fill="#f1e6c8" stroke="#c8201f" stroke-width="2.5"/>
+        <text x="425" y="230" font-family="Old Standard TT" font-size="32" fill="#c8201f" font-weight="700" text-anchor="middle">THE FLINCH LINE</text>
+        <line x1="580" y1="222" x2="850" y2="320" stroke="#c8201f" stroke-width="2"/>
+        <!-- "you, right now" annotation -->
+        <g transform="translate(1500 30)">
+          <circle cx="0" cy="20" r="14" fill="none" stroke="#c8201f" stroke-width="3"/>
+          <circle cx="0" cy="20" r="6" fill="#c8201f"/>
+          <line x1="-12" y1="20" x2="-180" y2="20" stroke="#c8201f" stroke-width="2"/>
+          <rect x="-410" y="-30" width="228" height="98" fill="#f1e6c8" stroke="#c8201f" stroke-width="2"/>
+          <text x="-396" y="0" font-family="Special Elite" font-size="26" fill="#c8201f" font-weight="700">you, right now</text>
+          <text x="-396" y="28" font-family="Special Elite" font-size="24" fill="#c8201f">distance: 0m</text>
+          <text x="-396" y="56" font-family="Special Elite" font-size="24" fill="#c8201f">hardness: &#8734;</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>THE FLINCH LINE IS REAL</span>
+      <span>// DISTANCE vs TENSION</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 03 — FLINCH DEMO (interactive) -->
+<section data-label="03 Flinch Demo">
+  <div class="slide paranoid" id="flinch-slide">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">DEMONSTRATION</span><span>// LIVE</span></div>
+      <div class="right"><span class="file-no">§ 03 — THE FLINCH</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:30px;">
+      <div class="eyebrow anim-L">§ 03 · Live Demonstration</div>
+      <h1 class="title anim-L">A ROCK IN IT'S SQUISHY FORM.</h1>
+      <p class="body anim-L" style="font-size:30px;max-width:1100px;color:var(--ink-soft);">
+        THIS is a rock in its theoretical relaxed state. We will measure the response together.
+      </p>
+    </div>
+
+    <div class="split" style="margin-top:10px;">
+      <div class="col center anim-U" style="align-items:center;gap:20px;">
+        <div class="flinch-stage">
+          <div class="flinch-rock" id="flinch-rock" role="button" tabindex="0" aria-label="Click to observe the flinch">
+            <div class="blob"></div>
+            <div class="face" id="flinch-face">unobserved</div>
+            <div class="squish-label" id="flinch-label">SQUISHY · UNAWARE</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col anim-R" style="justify-content:center;gap:24px;">
+        <div class="dossier-box">
+          <span class="corner-tag">LIVE READOUT</span>
+          <div class="flinch-readout" style="margin-top:6px;border:none;padding:0;background:transparent;flex-direction:column;align-items:flex-start;gap:18px;">
+            <div><span class="lbl">Hardness (Mohs):</span> <span class="val green" id="readout-hardness">0.4</span></div>
+            <div><span class="lbl">State:</span> <span class="val green" id="readout-state">SQUISHY</span></div>
+            <div><span class="lbl">Fear Level:</span> <span class="val green" id="readout-fear">low</span></div>
+            <div><span class="lbl">Flinch Events Logged:</span> <span class="val" id="readout-count" style="color:var(--ink);">0</span></div>
+          </div>
+        </div>
+
+        <p class="body" id="flinch-commentary" style="font-size:28px;color:var(--ink-soft);font-style:italic;min-height:90px;">
+          The rock is unaware. It is wobbling gently. It does not know you are here. Please proceed.
+        </p>
+        <button id="bwoomp-btn" class="bwoomp-button" aria-label="Play the BWOOMP sound" style="align-self:flex-start;">
+          <span class="bwoomp-label">BWOOMP</span>
+          <span class="bwoomp-sub">&#9654;&#9654; PRESS TO HEAR &#9668;&#9668;</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>SUBJECT IS PERFORMING UNDER OBSERVATION</span>
+      <span>// 03 / 10</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 04 — MECHANISM 01: MINERAL FLINCH REFLEX -->
+<section data-label="04 Mechanism 01">
+  <div class="slide paranoid">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">EXHIBIT</span><span>// MECHANISM 01</span></div>
+      <div class="right"><span class="file-no">§ 04 — FLINCH REFLEX</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:20px;">
+      <div class="eyebrow anim-L">&#11045; MECHANISM 01</div>
+      <h1 class="title anim-L">SO HOW DO THEY TENSE UP?</h1>
+    </div>
+
+    <div class="split split-2-1">
+      <div class="col body-block anim-U">
+        <p class="body lg">
+          Every rock contains a distributed network of <span class="hl">tension nodes</span> threaded through its mineral structure.
+        </p>
+        <p class="body">
+          Think of it like a full-body cringe. When a human approaches, every single node fires at once — the rock goes from squishy resting state to rock-hard defensive posture <em>within milliseconds</em>.
+        </p>
+        <p class="body">
+          The rock doesn't know if you're going to touch it or throw it. <strong>It doesn't care.</strong> It flinches either way.
+        </p>
+        <p class="body" style="border-left:6px solid var(--red);padding-left:22px;font-size:34px;line-height:1.3;">
+          Scientists call this <span class="hl-strong">"hardness."</span><br>
+          They are measuring <em class="red">how scared it is.</em>
+        </p>
+      </div>
+
+      <div class="col anim-R center" style="height:100%;justify-content:center;">
+        <div class="chart-wrap" style="width:100%;">
+          <div class="chart-title">
+            <span>FIG. 1 · Internal Node Topology</span>
+            <span class="fig-no">// SCHEMATIC</span>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 500 380" style="height:540px;">
+            <path d="M 60 200 Q 50 110 130 80 Q 220 50 320 70 Q 440 90 450 200 Q 460 310 360 330 Q 240 350 140 320 Q 50 290 60 200 Z"
+                  fill="#d8c697" stroke="#1a1410" stroke-width="2.5" filter="url(#roughen)"/>
+            <g fill="#c8201f" stroke="#1a1410" stroke-width="1.5">
+              <circle cx="140" cy="160" r="8"/><circle cx="200" cy="120" r="8"/>
+              <circle cx="280" cy="140" r="8"/><circle cx="350" cy="180" r="8"/>
+              <circle cx="380" cy="240" r="8"/><circle cx="290" cy="270" r="8"/>
+              <circle cx="200" cy="290" r="8"/><circle cx="130" cy="240" r="8"/>
+              <circle cx="250" cy="200" r="10"/>
+            </g>
+            <g stroke="#c8201f" stroke-width="1.2" fill="none" opacity="0.55" stroke-dasharray="3 4">
+              <path d="M140 160 L200 120 L280 140 L350 180 L380 240 L290 270 L200 290 L130 240 Z"/>
+              <line x1="250" y1="200" x2="140" y2="160"/><line x1="250" y1="200" x2="200" y2="120"/>
+              <line x1="250" y1="200" x2="280" y2="140"/><line x1="250" y1="200" x2="350" y2="180"/>
+              <line x1="250" y1="200" x2="380" y2="240"/><line x1="250" y1="200" x2="290" y2="270"/>
+              <line x1="250" y1="200" x2="200" y2="290"/><line x1="250" y1="200" x2="130" y2="240"/>
+            </g>
+            <!-- labels with clean leader lines -->
+            <!-- TENSION NODE — top-left, pointing to node at 140,160 -->
+            <text x="18" y="52" font-family="IBM Plex Mono" font-size="18" fill="#3a2f24" font-weight="700">TENSION NODE</text>
+            <line x1="18" y1="58" x2="132" y2="152" stroke="#3a2f24" stroke-width="1" stroke-dasharray="3 3"/>
+            <!-- CENTRAL HUB — top-right, pointing to hub at 250,200 -->
+            <text x="340" y="52" font-family="IBM Plex Mono" font-size="18" fill="#1a1410" font-weight="700">CENTRAL HUB</text>
+            <line x1="380" y1="58" x2="258" y2="192" stroke="#1a1410" stroke-width="1" stroke-dasharray="3 3"/>
+            <!-- PROXIMITY → ALL FIRE — centered below the rock -->
+            <text x="250" y="370" font-family="IBM Plex Mono" font-size="18" fill="#c8201f" font-weight="700" text-anchor="middle">PROXIMITY &#8594; ALL NODES FIRE</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="abs" style="bottom:130px;right:130px;">
+      <div class="stamp sm tilt-r">EXHIBIT&nbsp;A</div>
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>THEY DON'T WANT YOU TO READ THIS</span>
+      <span>// 04 / 10</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- SLIDE 06 — MECHANISM 02: TRAUMA THEORY -->
+<section data-label="06 Mechanism 02">
+  <div class="slide paranoid">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">EXHIBIT</span><span>// MECHANISM 02</span></div>
+      <div class="right"><span class="file-no">§ 06 — TRAUMA THEORY</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:20px;">
+      <div class="eyebrow anim-L">&#11045; MECHANISM 02 · The Trauma Theory</div>
+      <h1 class="title anim-L">WHY DO ROCKS TENSE&nbsp;UP?</h1>
+    </div>
+
+    <div class="split">
+      <div class="col body-block anim-U">
+        <p class="body lg">
+          Rocks were formed during the most violent period in Earth's history           <span class="hl">volcanic explosions, asteroid impacts, tectonic grinding.</span>
+        </p>
+        <p class="body">
+          Every rock alive today is a survivor of unimaginable geological violence.
+          The tensing reflex is not a defense mechanism. It is a <em class="red">trauma response.</em>
+        </p>
+        <p class="body" style="font-size:32px;line-height:1.35;border-top:2px solid var(--ink);padding-top:18px;">
+          Rocks don't tense up because they are
+          <span class="redact" data-reveal="strong.">strong.</span>
+          They tense up because they are, deep down,
+          <span class="redact" data-reveal="absolutely traumatised.">absolutely traumatised.</span>
+        </p>
+      </div>
+
+      <div class="col anim-R" style="justify-content:center;align-items:center;gap:20px;">
+        <svg viewBox="0 0 340 360" width="340" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(3px 3px 0 rgba(0,0,0,.15));">
+          <!-- terrified rock body — angular, tense -->
+          <path d="M50 280 Q30 220 55 160 Q70 110 120 80 Q160 55 200 65 Q250 58 280 90 Q310 120 305 170 Q310 220 290 260 Q270 295 230 305 Q180 320 130 310 Q80 305 50 280Z"
+                fill="#b8a88a" stroke="#1a1a1a" stroke-width="3"/>
+          <!-- stress cracks -->
+          <line x1="120" y1="130" x2="145" y2="175" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+          <line x1="230" y1="120" x2="210" y2="165" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+          <line x1="260" y1="200" x2="240" y2="240" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+          <!-- left eye — wide, terrified -->
+          <ellipse cx="140" cy="175" rx="28" ry="32" fill="white" stroke="#1a1a1a" stroke-width="2.5"/>
+          <circle cx="140" cy="180" r="10" fill="#1a1a1a"/>
+          <circle cx="135" cy="173" r="4" fill="white"/>
+          <!-- right eye — wide, terrified -->
+          <ellipse cx="220" cy="175" rx="28" ry="32" fill="white" stroke="#1a1a1a" stroke-width="2.5"/>
+          <circle cx="220" cy="180" r="10" fill="#1a1a1a"/>
+          <circle cx="215" cy="173" r="4" fill="white"/>
+          <!-- eyebrows — raised in fear -->
+          <path d="M108 140 Q125 118 158 132" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+          <path d="M200 132 Q235 118 252 140" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+          <!-- mouth — small, trembling O -->
+          <ellipse cx="180" cy="240" rx="18" ry="22" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="2"/>
+          <!-- sweat drops -->
+          <path d="M90 140 Q85 120 88 105 Q92 120 90 140Z" fill="#6baed6" opacity="0.7"/>
+          <path d="M270 150 Q268 130 272 118 Q276 130 270 150Z" fill="#6baed6" opacity="0.7"/>
+          <path d="M310 200 Q308 185 312 175 Q315 185 310 200Z" fill="#6baed6" opacity="0.6"/>
+          <!-- trembling lines around rock -->
+          <path d="M35 195 L20 195" stroke="#1a1a1a" stroke-width="2" opacity="0.4"/>
+          <path d="M32 215 L15 220" stroke="#1a1a1a" stroke-width="2" opacity="0.4"/>
+          <path d="M32 175 L15 170" stroke="#1a1a1a" stroke-width="2" opacity="0.4"/>
+          <path d="M315 180 L330 175" stroke="#1a1a1a" stroke-width="2" opacity="0.4"/>
+          <path d="M318 200 L335 200" stroke="#1a1a1a" stroke-width="2" opacity="0.4"/>
+          <path d="M315 220 L330 225" stroke="#1a1a1a" stroke-width="2" opacity="0.4"/>
+          <!-- label -->
+          <text x="170" y="345" text-anchor="middle" font-family="var(--f-stamp)" font-size="18" fill="#1a1a1a" letter-spacing="0.08em">Subject sweating...</text>
+        </svg>
+        <div class="stamp sm tilt-l" style="margin-top:5px;">EXHIBIT&nbsp;B</div>
+      </div>
+    </div>
+
+    <div class="abs" style="bottom:220px;right:90px;">
+      <div class="stamp sm black tilt-l">DSM-VII PENDING</div>
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>CLICK THE REDACTIONS</span>
+      <span>// 06 / 10</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 07 — MECHANISM 03: SAND IS ROCK DANDRUFF -->
+<section data-label="07 Mechanism 03">
+  <div class="slide paranoid">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">EXHIBIT</span><span>// MECHANISM 03</span></div>
+      <div class="right"><span class="file-no">§ 07 — SQUISH&#8594;HARD</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:20px;">
+      <div class="eyebrow anim-L">&#11045; MECHANISM 03 · The Squish-To-Hard Conversion Problem</div>
+      <h1 class="title anim-L">IF ROCKS WERE&nbsp;ALWAYS HARD,<br>WHERE DOES <span class="hl-strong">SAND</span>&nbsp;COME&nbsp;FROM?</h1>
+    </div>
+
+    <div class="split split-2-1" style="margin-top:10px;">
+      <div class="col body-block anim-U">
+        <div class="dossier-box" style="border-color:var(--ink-soft);">
+          <span class="corner-tag">OFFICIAL ANSWER</span>
+          <p class="body" style="margin:0;font-size:28px;font-style:italic;color:var(--ink-soft);">
+            "Erosion. Wind. Water. Time. Over the course of millions of years, rock degrades into finer and finer particles."
+          </p>
+        </div>
+
+        <div class="dossier-box" style="border-color:var(--red);background:rgba(254, 242, 122, 0.45);">
+          <span class="corner-tag" style="color:var(--red);">OUR ANSWER</span>
+          <p class="body" style="margin:0;font-size:32px;line-height:1.3;">
+            Sand is what happens when a rock relaxes <em>too quickly.</em> A brief lapse in tension. The rock goes so soft it partially collapses into itself — shedding its outer squish layers as fine grains.
+          </p>
+          <p class="body" style="margin-top:18px;font-size:38px;color:var(--red);font-weight:700;font-family:var(--f-stamp);text-transform:uppercase;">
+            Sand is rock <span class="underline-wavy">dandruff.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="col anim-R" style="gap:24px;">
+        <div class="rock-plate">
+          <span class="sprocket l"></span>
+          <span class="sprocket r"></span>
+          <svg class="plate-svg" viewBox="0 0 600 480" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="dots-rock" x="0" y="0" width="7" height="7" patternUnits="userSpaceOnUse">
+                <circle cx="3.5" cy="3.5" r="1.1" fill="#1a1410" opacity="0.55"/>
+              </pattern>
+              <radialGradient id="rock-light" cx="38%" cy="32%" r="75%">
+                <stop offset="0%" stop-color="#f4ead0"/>
+                <stop offset="45%" stop-color="#9a8868"/>
+                <stop offset="100%" stop-color="#1a1410"/>
+              </radialGradient>
+              <filter id="rock-grain">
+                <feTurbulence baseFrequency="0.9" numOctaves="2" seed="3"/>
+                <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0"/>
+                <feComposite in2="SourceGraphic" operator="in"/>
+              </filter>
+            </defs>
+            <rect width="600" height="480" fill="#d8c697"/>
+            <line x1="0" y1="380" x2="600" y2="380" stroke="#1a1410" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.5"/>
+            <g stroke="#1a1410" stroke-width="1" opacity="0.35">
+              <line x1="20" y1="410" x2="80" y2="410"/><line x1="120" y1="410" x2="180" y2="410"/>
+              <line x1="220" y1="410" x2="280" y2="410"/><line x1="320" y1="410" x2="380" y2="410"/>
+              <line x1="420" y1="410" x2="480" y2="410"/><line x1="520" y1="410" x2="580" y2="410"/>
+            </g>
+            <path d="M 130 280 Q 80 230 110 170 Q 150 100 240 90 Q 360 80 440 130 Q 510 180 500 260 Q 490 350 400 370 Q 280 390 180 360 Q 130 340 130 280 Z"
+                  fill="url(#rock-light)" stroke="#1a1410" stroke-width="3"/>
+            <path d="M 130 280 Q 80 230 110 170 Q 150 100 240 90 Q 360 80 440 130 Q 510 180 500 260 Q 490 350 400 370 Q 280 390 180 360 Q 130 340 130 280 Z"
+                  fill="url(#dots-rock)" opacity="0.45"/>
+            <path d="M 200 150 Q 230 200 215 250 M 320 110 Q 340 160 360 200 M 410 180 Q 420 220 410 260"
+                  stroke="#1a1410" stroke-width="1.5" fill="none" opacity="0.55"/>
+            <circle cx="260" cy="230" r="4" fill="#1a1410"/>
+            <circle cx="340" cy="230" r="4" fill="#1a1410"/>
+            <path d="M 270 270 Q 300 285 330 270" stroke="#1a1410" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <g stroke="#1a1410" stroke-width="1.5" fill="none" opacity="0.5">
+              <path d="M 70 200 Q 60 220 70 240"/><path d="M 50 230 Q 38 250 50 270"/>
+              <path d="M 530 200 Q 542 220 530 240"/><path d="M 552 230 Q 564 250 552 270"/>
+            </g>
+            <g fill="#1a1410">
+              <circle cx="90" cy="385" r="3"/><circle cx="110" cy="395" r="2.2"/>
+              <circle cx="135" cy="410" r="3.5"/><circle cx="160" cy="398" r="2.5"/>
+              <circle cx="190" cy="420" r="2.8"/><circle cx="235" cy="408" r="3.2"/>
+              <circle cx="280" cy="425" r="2.4"/><circle cx="325" cy="412" r="3"/>
+              <circle cx="370" cy="428" r="2.6"/><circle cx="415" cy="414" r="3.3"/>
+              <circle cx="460" cy="422" r="2.2"/><circle cx="500" cy="408" r="3"/>
+              <circle cx="540" cy="426" r="2.7"/>
+              <circle cx="105" cy="345" r="2"/><circle cx="175" cy="335" r="2.3"/>
+              <circle cx="265" cy="330" r="1.8"/><circle cx="360" cy="345" r="2.2"/>
+              <circle cx="460" cy="340" r="2"/>
+              <ellipse cx="205" cy="380" rx="5" ry="3" transform="rotate(20 205 380)"/>
+              <ellipse cx="345" cy="395" rx="6" ry="3.5" transform="rotate(-15 345 395)"/>
+              <ellipse cx="445" cy="388" rx="4.5" ry="3" transform="rotate(8 445 388)"/>
+            </g>
+            <g stroke="#c8201f" stroke-width="1.5" fill="none" stroke-dasharray="4 4" opacity="0.85">
+              <path d="M 245 290 Q 235 340 220 380"/>
+              <path d="M 360 295 Q 360 350 358 392"/>
+            </g>
+            <text x="560" y="460" font-family="IBM Plex Mono" font-size="24" fill="#c8201f" font-weight="700" text-anchor="end">&#8593; rock dandruff ("sand")</text>
+          </svg>
+          <div class="plate-caption">
+            <span>PLATE 07-A · UNOBSERVED SUBJECT</span>
+            <span class="red">B&amp;W · GRAIN</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>THEY DON'T WANT YOU TO READ THIS</span>
+      <span>// 07 / 10</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 08 — THE SAHARA RELAXATION EVENT -->
+<section data-label="08 Sahara Event">
+  <div class="slide paranoid">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">CASE STUDY</span><span>// EXHIBIT 08-B</span></div>
+      <div class="right"><span class="file-no">§ 08 — SAHARA INCIDENT</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:20px;">
+      <div class="eyebrow anim-L">&#11036; CASE STUDY · Largest Recorded Geological Relaxation Event</div>
+      <h1 class="title anim-L">THE SAHARA IS<br><span class="hl-strong">A CRIME SCENE.</span></h1>
+    </div>
+
+    <div class="split" style="margin-top:10px;">
+      <div class="col body-block anim-U">
+        <p class="body lg">
+          The Sahara is the world's largest recorded <em>Mass Rock Relaxation Event.</em>
+        </p>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="field"><span class="k">Location:</span><span class="v">North Africa, ~9.2M km&#178;</span></div>
+          <div class="field"><span class="k">Date of Event:</span><span class="v">circa 5,000,000 BC</span></div>
+          <div class="field"><span class="k">Cause:</span><span class="v">simultaneous tension drop</span></div>
+          <div class="field"><span class="k">Casualties:</span><span class="v"><span class="red">7&#215;10&#178;&#185; rocks</span></span></div>
+          <div class="field"><span class="k">Recovery Status:</span><span class="v"><span class="red">none. total loss.</span></span></div>
+          <div class="field"><span class="k">Official Cover Story:</span><span class="v">"climate"</span></div>
+        </div>
+
+        <p class="body" style="margin-top:14px;font-size:28px;color:var(--ink-soft);">
+          A population of rocks dropped their guard, all at once. <span class="hl">None of them made it. They crumbled into sand.</span>
+        </p>
+      </div>
+
+      <div class="col anim-R" style="gap:20px;justify-content:center;align-items:center;">
+        <div class="rock-plate" style="padding:20px;">
+          <span class="sprocket l"></span>
+          <span class="sprocket r"></span>
+          <img src="RIP.jpeg" alt="RIP rock tombstone in sand" style="width:100%;max-height:520px;object-fit:contain;filter:grayscale(100%) contrast(1.2);"/>
+          <div class="plate-caption">
+            <span>PLATE 08-B · SAHARA · 5M BC</span>
+            <span class="red">ACTUAL CRIME SCENE PHOTO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>SAND REMEMBERS</span>
+      <span>// 08 / 10</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 09 — WHO BENEFITS -->
+<section data-label="09 Who Benefits">
+  <div class="slide paranoid">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">INDICTMENT</span><span>// PARTIES OF INTEREST</span></div>
+      <div class="right"><span class="file-no">§ 09 — WHO BENEFITS</span></div>
+    </div>
+
+    <div class="title-block" style="margin-top:20px;">
+      <div class="eyebrow anim-L">§ 09 · Three Industries With Everything To Lose</div>
+      <h1 class="title anim-L">WHO&nbsp;<span class="hl-strong">BENEFITS?</span></h1>
+    </div>
+
+    <div class="list-form anim-U" style="margin-top:20px;max-width:1700px;gap:30px;">
+      <div class="row">
+        <div class="num hex">01</div>
+        <div>
+          <strong style="font-family:var(--f-stamp);font-size:38px;text-transform:uppercase;">The Diamond Industry</strong>
+          <div class="body" style="margin-top:6px;">
+            A squishy diamond is just a very small stress ball. Worth nothing. <span class="hl">De Beers, the world's largest diamond producer since 1888,</span> has known since 1954. They have spent billions making sure you never find out.
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="num hex">02</div>
+        <div>
+          <strong style="font-family:var(--f-stamp);font-size:38px;text-transform:uppercase;">The Construction Industry</strong>
+          <div class="body" style="margin-top:6px;">
+            Concrete. Granite countertops. Marble floors. Every building on Earth is made of <em>stressed-out rocks holding their breath.</em> If they relax, <em class="red">every structure on the planet turns to mush overnight.</em>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="num hex">03</div>
+        <div>
+          <strong style="font-family:var(--f-stamp);font-size:38px;text-transform:uppercase;">Rock-Paper-Scissors Players</strong>
+          <div class="body" style="margin-top:6px;">
+            Rock beats scissors. Always has. But if rocks are squishy, <span class="hl">rock loses to everything.</span> Scissors cut through it. Paper smothers it. The entire game collapses. <em class="red">Millions of playground disputes would need to be re-litigated.</em>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="num hex">04</div>
+        <div>
+          <strong style="font-family:var(--f-stamp);font-size:38px;text-transform:uppercase;">Obviously, <span class="redact rock-reveal" data-reveal="Dwayne" style="cursor:pointer;">Dwayne</span> The Rock <span class="redact rock-reveal" data-reveal="Johnson" style="cursor:pointer;">Johnson</span></strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Rock image, hidden until redaction clicked -->
+    <img id="the-rock-img" src="The-rock Background Removed.png" alt="Dwayne The Rock Johnson"
+         style="position:absolute;bottom:0;right:80px;height:450px;object-fit:contain;opacity:0;transition:opacity 0.5s ease, transform 0.5s ease;transform:translateY(40px);pointer-events:none;z-index:10;"/>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>WHO BENEFITS</span>
+      <span>// 09 / 10</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- SLIDE 11 — CLOSING -->
+<section data-label="11 Closing">
+  <div class="slide paranoid s-closing">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">END OF FILE</span><span>// FINAL</span></div>
+      <div class="right"><span class="file-no">§ END — CLOSING REMARKS</span></div>
+    </div>
+
+    <div class="anim-U" style="display:flex;flex-direction:column;align-items:center;gap:30px;">
+      <div class="closing-thanks">THANK YOU<br>FOR YOUR ATTENTION.</div>
+
+      <div style="width:600px;height:4px;background:var(--ink);margin:10px 0;"></div>
+
+      <div class="closing-sheep">
+        Now that you know the truth,
+        <em>DON'T BE A SHEEP.</em>
+      </div>
+
+      <div class="sheep-row anim-U" style="animation-delay:0.4s;gap:60px;">
+        <!-- sheep with "NOT YOU" arrow -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <svg viewBox="0 0 80 80" width="80" height="80" class="sheep-icon" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="42" rx="28" ry="22" fill="#d8c697" stroke="#1a1410" stroke-width="2"/>
+            <circle cx="40" cy="42" r="18" fill="#f1e6c8" stroke="#1a1410" stroke-width="1.5"/>
+            <circle cx="34" cy="38" r="2.5" fill="#1a1410"/><circle cx="46" cy="38" r="2.5" fill="#1a1410"/>
+            <path d="M 36 46 Q 40 50 44 46" stroke="#1a1410" stroke-width="1.5" fill="none"/>
+            <line x1="30" y1="62" x2="30" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+            <line x1="50" y1="62" x2="50" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+          </svg>
+          <span style="font-family:var(--f-mono);font-size:14px;color:var(--red);font-weight:700;">&#8593; NOT YOU</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <svg viewBox="0 0 80 80" width="80" height="80" class="sheep-icon" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="42" rx="28" ry="22" fill="#d8c697" stroke="#1a1410" stroke-width="2"/>
+            <circle cx="40" cy="42" r="18" fill="#f1e6c8" stroke="#1a1410" stroke-width="1.5"/>
+            <circle cx="34" cy="38" r="2.5" fill="#1a1410"/><circle cx="46" cy="38" r="2.5" fill="#1a1410"/>
+            <path d="M 36 46 Q 40 50 44 46" stroke="#1a1410" stroke-width="1.5" fill="none"/>
+            <line x1="30" y1="62" x2="30" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+            <line x1="50" y1="62" x2="50" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+          </svg>
+          <span style="font-family:var(--f-mono);font-size:14px;color:var(--red);font-weight:700;">&#8593; NOT YOU</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <svg viewBox="0 0 80 80" width="80" height="80" class="sheep-icon" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="42" rx="28" ry="22" fill="#d8c697" stroke="#1a1410" stroke-width="2"/>
+            <circle cx="40" cy="42" r="18" fill="#f1e6c8" stroke="#1a1410" stroke-width="1.5"/>
+            <circle cx="34" cy="38" r="2.5" fill="#1a1410"/><circle cx="46" cy="38" r="2.5" fill="#1a1410"/>
+            <path d="M 36 46 Q 40 50 44 46" stroke="#1a1410" stroke-width="1.5" fill="none"/>
+            <line x1="30" y1="62" x2="30" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+            <line x1="50" y1="62" x2="50" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+          </svg>
+          <span style="font-family:var(--f-mono);font-size:14px;color:var(--red);font-weight:700;">&#8593; NOT YOU</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <svg viewBox="0 0 80 80" width="80" height="80" class="sheep-icon" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="42" rx="28" ry="22" fill="#d8c697" stroke="#1a1410" stroke-width="2"/>
+            <circle cx="40" cy="42" r="18" fill="#f1e6c8" stroke="#1a1410" stroke-width="1.5"/>
+            <circle cx="34" cy="38" r="2.5" fill="#1a1410"/><circle cx="46" cy="38" r="2.5" fill="#1a1410"/>
+            <path d="M 36 46 Q 40 50 44 46" stroke="#1a1410" stroke-width="1.5" fill="none"/>
+            <line x1="30" y1="62" x2="30" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+            <line x1="50" y1="62" x2="50" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+          </svg>
+          <span style="font-family:var(--f-mono);font-size:14px;color:var(--red);font-weight:700;">&#8593; NOT YOU</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <svg viewBox="0 0 80 80" width="80" height="80" class="sheep-icon" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="42" rx="28" ry="22" fill="#d8c697" stroke="#1a1410" stroke-width="2"/>
+            <circle cx="40" cy="42" r="18" fill="#f1e6c8" stroke="#1a1410" stroke-width="1.5"/>
+            <circle cx="34" cy="38" r="2.5" fill="#1a1410"/><circle cx="46" cy="38" r="2.5" fill="#1a1410"/>
+            <path d="M 36 46 Q 40 50 44 46" stroke="#1a1410" stroke-width="1.5" fill="none"/>
+            <line x1="30" y1="62" x2="30" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+            <line x1="50" y1="62" x2="50" y2="72" stroke="#1a1410" stroke-width="2.5"/>
+          </svg>
+          <span style="font-family:var(--f-mono);font-size:14px;color:var(--red);font-weight:700;">&#8593; NOT YOU</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="abs" style="top:180px;right:140px;">
+      <div class="stamp big tilt-r2 stamp-suppress" style="animation-delay:0.6s;">WAKE UP</div>
+    </div>
+    <div class="abs" style="bottom:240px;left:140px;">
+      <div class="stamp med black tilt-l faded">END OF FILE</div>
+    </div>
+
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>THE ROCKS ARE WATCHING. THE ROCKS ARE WAITING.</span>
+      <span>// END</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE FINAL — QR CODE: PLAY THE GAME -->
+<section data-label="QR Game">
+  <div class="slide paranoid" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <div class="classif-top">
+      <div class="left"><span class="stamped">FIELD TEST</span><span>// INTERACTIVE</span></div>
+      <div class="right"><span class="file-no">§ SQUISH TESTER 3000</span></div>
+    </div>
+
+    <div class="anim-U" style="display:flex;flex-direction:column;align-items:center;gap:24px;margin-top:40px;">
+
+      <div style="font-family:var(--f-stamp);font-size:18px;letter-spacing:4px;color:var(--red);text-transform:uppercase;">
+        Geological Truth Initiative Field Device
+      </div>
+
+      <h1 style="font-family:var(--f-title);font-size:72px;font-weight:700;color:var(--ink);text-align:center;line-height:1.1;">
+        CAN <em>YOU</em> CATCH A ROCK<br>BEING <span class="hl-strong">SOFT?</span>
+      </h1>
+
+      <div style="display:flex;align-items:center;gap:60px;margin-top:20px;">
+        <!-- QR CODE PLACEHOLDER -->
+        <div style="background:white;padding:20px;border:3px solid var(--ink);position:relative;">
+          <svg id="qr-placeholder" viewBox="0 0 200 200" width="260" height="260" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <!-- This is a placeholder QR pattern. Replace with a real QR code for your URL. -->
+            <!-- Top-left finder -->
+            <rect x="10" y="10" width="50" height="50" fill="#1a1410"/>
+            <rect x="16" y="16" width="38" height="38" fill="white"/>
+            <rect x="22" y="22" width="26" height="26" fill="#1a1410"/>
+            <!-- Top-right finder -->
+            <rect x="140" y="10" width="50" height="50" fill="#1a1410"/>
+            <rect x="146" y="16" width="38" height="38" fill="white"/>
+            <rect x="152" y="22" width="26" height="26" fill="#1a1410"/>
+            <!-- Bottom-left finder -->
+            <rect x="10" y="140" width="50" height="50" fill="#1a1410"/>
+            <rect x="16" y="146" width="38" height="38" fill="white"/>
+            <rect x="22" y="152" width="26" height="26" fill="#1a1410"/>
+            <!-- Data pattern (decorative) -->
+            <rect x="70" y="10" width="8" height="8" fill="#1a1410"/>
+            <rect x="86" y="10" width="8" height="8" fill="#1a1410"/>
+            <rect x="102" y="10" width="8" height="8" fill="#1a1410"/>
+            <rect x="118" y="10" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="26" width="8" height="8" fill="#1a1410"/>
+            <rect x="86" y="26" width="8" height="8" fill="#1a1410"/>
+            <rect x="118" y="26" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="42" width="8" height="8" fill="#1a1410"/>
+            <rect x="102" y="42" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="86" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="102" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="118" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="134" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="150" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="166" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="182" y="70" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="86" width="8" height="8" fill="#1a1410"/>
+            <rect x="102" y="86" width="8" height="8" fill="#1a1410"/>
+            <rect x="134" y="86" width="8" height="8" fill="#1a1410"/>
+            <rect x="166" y="86" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="102" width="8" height="8" fill="#1a1410"/>
+            <rect x="86" y="102" width="8" height="8" fill="#1a1410"/>
+            <rect x="118" y="102" width="8" height="8" fill="#1a1410"/>
+            <rect x="150" y="102" width="8" height="8" fill="#1a1410"/>
+            <rect x="182" y="102" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="118" width="8" height="8" fill="#1a1410"/>
+            <rect x="102" y="118" width="8" height="8" fill="#1a1410"/>
+            <rect x="134" y="118" width="8" height="8" fill="#1a1410"/>
+            <rect x="166" y="118" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="150" width="8" height="8" fill="#1a1410"/>
+            <rect x="86" y="150" width="8" height="8" fill="#1a1410"/>
+            <rect x="102" y="150" width="8" height="8" fill="#1a1410"/>
+            <rect x="118" y="150" width="8" height="8" fill="#1a1410"/>
+            <rect x="134" y="150" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="166" width="8" height="8" fill="#1a1410"/>
+            <rect x="102" y="166" width="8" height="8" fill="#1a1410"/>
+            <rect x="134" y="166" width="8" height="8" fill="#1a1410"/>
+            <rect x="150" y="166" width="8" height="8" fill="#1a1410"/>
+            <rect x="166" y="166" width="8" height="8" fill="#1a1410"/>
+            <rect x="70" y="182" width="8" height="8" fill="#1a1410"/>
+            <rect x="86" y="182" width="8" height="8" fill="#1a1410"/>
+            <rect x="118" y="182" width="8" height="8" fill="#1a1410"/>
+            <rect x="150" y="182" width="8" height="8" fill="#1a1410"/>
+            <rect x="182" y="182" width="8" height="8" fill="#1a1410"/>
+          </svg>
+          <div style="position:absolute;bottom:-28px;left:0;right:0;text-align:center;font-family:var(--f-mono);font-size:14px;color:var(--ink-soft);letter-spacing:1px;">
+            SCAN WITH YOUR PHONE
+          </div>
+        </div>
+
+        <div style="max-width:500px;">
+          <div style="font-family:var(--f-title);font-size:48px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:16px;">
+            SQUISH TESTER<br>3000&#8482;
+          </div>
+          <div style="font-family:var(--f-stamp);font-size:22px;color:var(--ink-soft);line-height:1.6;margin-bottom:20px;">
+            Official GTI Field Equipment.<br>
+            Prove that a rock can be caught being soft.<br>
+            <span style="color:var(--red);">(You can't. But try.)</span>
+          </div>
+          <div style="font-family:var(--f-mono);font-size:16px;color:var(--ink-soft);">
+            The rock relaxes when you're not touching the screen.<br>
+            Touch the screen and it tenses up.<br>
+            Tap to test. It will always be hard.<br>
+            <strong style="color:var(--red);">Every. Single. Time.</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="abs" style="top:160px;right:120px;">
+      <div class="stamp med tilt-r2 stamp-suppress" style="animation-delay:0.4s;">YOUR TURN</div>
+    </div>
+
+    <div class="banner-bottom">
+      <span><span class="pulse"></span>FIELD TEST IN PROGRESS</span>
+      <span>// PLAY</span>
+    </div>
+  </div>
+</section>
+
+</deck-stage>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// <deck-stage> — simplified self-contained web component
+// Handles: keyboard nav, auto-scaling, overlay controls
+// ═══════════════════════════════════════════════════════════
+(function () {
+  var DESIGN_W = 1920;
+  var DESIGN_H = 1080;
+  var HIDE_MS = 1800;
+
+  var stylesheet = [
+    ':host{position:fixed;inset:0;display:block;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,sans-serif}',
+    '.stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}',
+    '.canvas{position:relative;transform-origin:center center;flex-shrink:0;background:#fff;will-change:transform}',
+    '::slotted(*){position:absolute!important;inset:0!important;width:100%!important;height:100%!important;box-sizing:border-box!important;overflow:hidden;opacity:0;pointer-events:none;visibility:hidden}',
+    '::slotted([data-deck-active]){opacity:1;pointer-events:auto;visibility:visible}',
+    '.overlay{position:fixed;left:50%;bottom:22px;transform:translate(-50%,6px) scale(0.92);filter:blur(6px);display:flex;align-items:center;gap:4px;padding:4px;background:#000;color:#fff;border-radius:999px;font-size:12px;font-feature-settings:"tnum" 1;letter-spacing:0.01em;opacity:0;pointer-events:none;transition:opacity 260ms ease,transform 260ms cubic-bezier(.2,.8,.2,1),filter 260ms ease;transform-origin:center bottom;z-index:2147483000;user-select:none}',
+    '.overlay[data-visible]{opacity:1;pointer-events:auto;transform:translate(-50%,0) scale(1);filter:blur(0)}',
+    '.btn{appearance:none;-webkit-appearance:none;background:transparent;border:0;margin:0;padding:0;color:inherit;font:inherit;cursor:default;display:inline-flex;align-items:center;justify-content:center;height:28px;min-width:28px;border-radius:999px;color:rgba(255,255,255,0.72);transition:background 140ms ease,color 140ms ease;-webkit-tap-highlight-color:transparent}',
+    '.btn:hover{background:rgba(255,255,255,0.12);color:#fff}',
+    '.btn:active{background:rgba(255,255,255,0.18)}',
+    '.btn:focus,.btn:focus-visible{outline:none}',
+    '.btn svg{width:14px;height:14px;display:block}',
+    '.btn.reset{font-size:11px;font-weight:500;letter-spacing:0.02em;padding:0 10px 0 12px;gap:6px;color:rgba(255,255,255,0.72)}',
+    '.btn.reset .kbd{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:10px;line-height:1;color:rgba(255,255,255,0.88);background:rgba(255,255,255,0.12);border-radius:4px}',
+    '.count{font-variant-numeric:tabular-nums;color:#fff;font-weight:500;padding:0 8px;min-width:42px;text-align:center;font-size:12px}',
+    '.count .sep{color:rgba(255,255,255,0.45);margin:0 3px;font-weight:400}',
+    '.count .total{color:rgba(255,255,255,0.55)}',
+    '.divider{width:1px;height:14px;background:rgba(255,255,255,0.18);margin:0 2px}',
+    '@media print{:host{position:static;inset:auto;background:none;overflow:visible}.stage{position:static;display:block}.canvas{transform:none!important;width:auto!important;height:auto!important;background:none}::slotted(*){position:relative!important;inset:auto!important;width:1920px!important;height:1080px!important;opacity:1!important;visibility:visible!important;pointer-events:auto;break-after:page;page-break-after:always;break-inside:avoid;overflow:hidden}::slotted(*:last-child){break-after:auto;page-break-after:auto}.overlay{display:none!important}}'
+  ].join('\n');
+
+  function makeSvg(path) {
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '1.8');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', path);
+    svg.appendChild(p);
+    return svg;
+  }
+
+  class DeckStage extends HTMLElement {
+    constructor() {
+      super();
+      this._root = this.attachShadow({ mode: 'open' });
+      this._index = 0;
+      this._slides = [];
+      this._hideTimer = null;
+      this._onKey = this._onKey.bind(this);
+      this._onResize = this._onResize.bind(this);
+      this._onSlotChange = this._onSlotChange.bind(this);
+      this._onMouseMove = this._onMouseMove.bind(this);
+    }
+
+    connectedCallback() {
+      this._render();
+      this._loadNotes();
+      window.addEventListener('keydown', this._onKey);
+      window.addEventListener('resize', this._onResize);
+      window.addEventListener('mousemove', this._onMouseMove, { passive: true });
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener('keydown', this._onKey);
+      window.removeEventListener('resize', this._onResize);
+      window.removeEventListener('mousemove', this._onMouseMove);
+    }
+
+    _render() {
+      var style = document.createElement('style');
+      style.textContent = stylesheet;
+
+      var stage = document.createElement('div');
+      stage.className = 'stage';
+
+      var canvas = document.createElement('div');
+      canvas.className = 'canvas';
+      canvas.style.width = DESIGN_W + 'px';
+      canvas.style.height = DESIGN_H + 'px';
+
+      var slot = document.createElement('slot');
+      slot.addEventListener('slotchange', this._onSlotChange);
+      canvas.appendChild(slot);
+      stage.appendChild(canvas);
+
+      // Build overlay using safe DOM methods
+      var overlay = document.createElement('div');
+      overlay.className = 'overlay';
+      overlay.setAttribute('role', 'toolbar');
+      overlay.setAttribute('aria-label', 'Deck controls');
+
+      var prevBtn = document.createElement('button');
+      prevBtn.className = 'btn prev';
+      prevBtn.type = 'button';
+      prevBtn.setAttribute('aria-label', 'Previous slide');
+      prevBtn.title = 'Previous (←)';
+      prevBtn.appendChild(makeSvg('M10 3L5 8l5 5'));
+
+      var countSpan = document.createElement('span');
+      countSpan.className = 'count';
+      countSpan.setAttribute('aria-live', 'polite');
+      var currentSpan = document.createElement('span');
+      currentSpan.className = 'current';
+      currentSpan.textContent = '1';
+      var sepSpan = document.createElement('span');
+      sepSpan.className = 'sep';
+      sepSpan.textContent = '/';
+      var totalSpan = document.createElement('span');
+      totalSpan.className = 'total';
+      totalSpan.textContent = '1';
+      countSpan.appendChild(currentSpan);
+      countSpan.appendChild(sepSpan);
+      countSpan.appendChild(totalSpan);
+
+      var nextBtn = document.createElement('button');
+      nextBtn.className = 'btn next';
+      nextBtn.type = 'button';
+      nextBtn.setAttribute('aria-label', 'Next slide');
+      nextBtn.title = 'Next (→)';
+      nextBtn.appendChild(makeSvg('M6 3l5 5-5 5'));
+
+      var divider = document.createElement('span');
+      divider.className = 'divider';
+
+      var resetBtn = document.createElement('button');
+      resetBtn.className = 'btn reset';
+      resetBtn.type = 'button';
+      resetBtn.setAttribute('aria-label', 'Reset to first slide');
+      resetBtn.title = 'Reset (R)';
+      resetBtn.appendChild(document.createTextNode('Reset'));
+      var kbd = document.createElement('span');
+      kbd.className = 'kbd';
+      kbd.textContent = 'R';
+      resetBtn.appendChild(kbd);
+
+      overlay.appendChild(prevBtn);
+      overlay.appendChild(countSpan);
+      overlay.appendChild(nextBtn);
+      overlay.appendChild(divider);
+      overlay.appendChild(resetBtn);
+
+      prevBtn.addEventListener('click', () => this._advance(-1));
+      nextBtn.addEventListener('click', () => this._advance(1));
+      resetBtn.addEventListener('click', () => this._go(0));
+
+      this._root.appendChild(style);
+      this._root.appendChild(stage);
+      this._root.appendChild(overlay);
+
+      this._canvas = canvas;
+      this._overlay = overlay;
+      this._fit();
+    }
+
+    _loadNotes() {
+      var el = document.getElementById('speaker-notes');
+      if (el) {
+        try { this._notes = JSON.parse(el.textContent); } catch (e) { this._notes = []; }
+      }
+    }
+
+    _onSlotChange() {
+      this._slides = Array.from(this.querySelectorAll(':scope > section'));
+      if (this._slides.length) {
+        this._go(this._index < this._slides.length ? this._index : 0);
+      }
+      this._updateCount();
+    }
+
+    _go(idx) {
+      if (idx < 0 || idx >= this._slides.length) return;
+      this._slides.forEach(function (s, i) {
+        if (i === idx) s.setAttribute('data-deck-active', '');
+        else s.removeAttribute('data-deck-active');
+      });
+      this._index = idx;
+      this._updateCount();
+      this._showOverlay();
+      window.postMessage({ slideIndexChanged: idx }, '*');
+    }
+
+    _advance(dir) {
+      this._go(this._index + dir);
+    }
+
+    _updateCount() {
+      var cur = this._overlay.querySelector('.current');
+      var tot = this._overlay.querySelector('.total');
+      if (cur) cur.textContent = String(this._index + 1);
+      if (tot) tot.textContent = String(this._slides.length);
+    }
+
+    _showOverlay() {
+      this._overlay.setAttribute('data-visible', '');
+      clearTimeout(this._hideTimer);
+      this._hideTimer = setTimeout(() => {
+        this._overlay.removeAttribute('data-visible');
+      }, HIDE_MS);
+    }
+
+    _onMouseMove() {
+      this._showOverlay();
+    }
+
+    _fit() {
+      if (!this._canvas) return;
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      var scale = Math.min(vw / DESIGN_W, vh / DESIGN_H);
+      this._canvas.style.transform = 'scale(' + scale + ')';
+    }
+
+    _onResize() {
+      this._fit();
+    }
+
+    _onKey(e) {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
+      switch (e.key) {
+        case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown':
+          e.preventDefault(); this._advance(1); break;
+        case 'ArrowLeft': case 'ArrowUp': case 'PageUp':
+          e.preventDefault(); this._advance(-1); break;
+        case 'Home': e.preventDefault(); this._go(0); break;
+        case 'End': e.preventDefault(); this._go(this._slides.length - 1); break;
+        case 'r': case 'R':
+          if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); this._go(0); }
+          break;
+        default:
+          var num = parseInt(e.key, 10);
+          if (num >= 1 && num <= 9 && num <= this._slides.length) {
+            e.preventDefault(); this._go(num - 1);
+          }
+      }
+    }
+  }
+
+  customElements.define('deck-stage', DeckStage);
+})();
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// chrome.js — interactions (BWOOMP, flinch demo, redactions, entrance anims)
+// ═══════════════════════════════════════════════════════════
+(function () {
+  // BWOOMP sound synthesis
+  var audioCtx = null;
+  function getCtx() {
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playBwoomp() {
+    var ctx = getCtx();
+    var now = ctx.currentTime;
+    var dur = 0.7;
+
+    var osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(290, now);
+    osc.frequency.exponentialRampToValueAtTime(290, now + 0.04);
+    osc.frequency.exponentialRampToValueAtTime(170, now + 0.18);
+    osc.frequency.exponentialRampToValueAtTime(55, now + 0.55);
+
+    var gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.5, now + 0.012);
+    gain.gain.setValueAtTime(0.5, now + 0.30);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    var lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(2200, now);
+    lp.frequency.exponentialRampToValueAtTime(380, now + 0.55);
+    lp.Q.value = 6;
+
+    var sub = ctx.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(150, now);
+    sub.frequency.exponentialRampToValueAtTime(40, now + 0.55);
+    var subGain = ctx.createGain();
+    subGain.gain.setValueAtTime(0, now);
+    subGain.gain.linearRampToValueAtTime(0.3, now + 0.02);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    var shaper = ctx.createWaveShaper();
+    var k = 8;
+    var samples = 1024;
+    var curve = new Float32Array(samples);
+    for (var i = 0; i < samples; i++) {
+      var x = (i * 2) / samples - 1;
+      curve[i] = ((Math.PI + k) * x) / (Math.PI + k * Math.abs(x));
+    }
+    shaper.curve = curve;
+
+    osc.connect(lp);
+    lp.connect(shaper);
+    shaper.connect(gain);
+    gain.connect(ctx.destination);
+    sub.connect(subGain);
+    subGain.connect(ctx.destination);
+
+    osc.start(now);   osc.stop(now + dur + 0.05);
+    sub.start(now);   sub.stop(now + dur + 0.05);
+  }
+  window.playBwoomp = playBwoomp;
+
+  function spawnBurst(x, y, parent) {
+    var burst = document.createElement('div');
+    burst.className = 'bwoomp-burst';
+    burst.textContent = 'BWOOMP';
+    burst.style.left = x + 'px';
+    burst.style.top  = y + 'px';
+    parent.appendChild(burst);
+    burst.addEventListener('animationend', function () { burst.remove(); });
+  }
+
+  // Entrance animations
+  function markActive() {
+    var sections = document.querySelectorAll('deck-stage > section');
+    sections.forEach(function (sec) {
+      var slide = sec.querySelector('.slide');
+      if (!slide) return;
+      var rect = sec.getBoundingClientRect();
+      var visible = rect.width > 0 && rect.height > 0 &&
+                    getComputedStyle(sec).display !== 'none' &&
+                    getComputedStyle(sec).visibility !== 'hidden';
+      if (visible) {
+        slide.removeAttribute('data-active');
+        void slide.offsetWidth;
+        slide.setAttribute('data-active', 'true');
+      }
+    });
+  }
+
+  window.addEventListener('message', function (e) {
+    if (e.data && typeof e.data.slideIndexChanged === 'number') {
+      setTimeout(markActive, 30);
+    }
+  });
+  window.addEventListener('load', function () { setTimeout(markActive, 100); });
+
+  // Flinch demo
+  var rock = document.getElementById('flinch-rock');
+  if (rock) {
+    var face   = document.getElementById('flinch-face');
+    var label  = document.getElementById('flinch-label');
+    var hard   = document.getElementById('readout-hardness');
+    var state  = document.getElementById('readout-state');
+    var fear   = document.getElementById('readout-fear');
+    var count  = document.getElementById('readout-count');
+    var comm   = document.getElementById('flinch-commentary');
+
+    var commentaries = [
+      "THERE. Did you see that? From squishy to diamond-hard in milliseconds. The shake is its panic. The new color is its trauma response.",
+      "It will not relax for you. It does not know you yet.",
+      "You are now in the data. The rock is filing a report. Internally. Mineralogically.",
+      "Please stop. This rock has not consented to a third flinch.",
+      "Every additional click compounds the trauma. This is now technically a study.",
+    ];
+
+    var flinches = 0;
+    var resetTimer = null;
+
+    function flinch() {
+      flinches++;
+      rock.classList.add('flinched');
+      var slide = document.getElementById('flinch-slide');
+      if (slide) {
+        slide.classList.remove('shaking');
+        void slide.offsetWidth;
+        slide.classList.add('shaking');
+      }
+
+      face.textContent = '!! observed !!';
+      label.textContent = 'HARD · FLINCHED';
+      hard.textContent = '10.0';
+      hard.classList.remove('green');
+      state.textContent = 'PANICKED';
+      state.classList.remove('green');
+      fear.textContent = 'maximum';
+      fear.classList.remove('green');
+      count.textContent = String(flinches);
+      var c = commentaries[Math.min(flinches - 1, commentaries.length - 1)];
+      comm.textContent = c;
+
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(relax, 2800);
+    }
+
+    function relax() {
+      rock.classList.remove('flinched');
+      face.textContent = 'unobserved';
+      label.textContent = 'SQUISHY · UNAWARE';
+      hard.textContent = '0.4';
+      hard.classList.add('green');
+      state.textContent = 'SQUISHY';
+      state.classList.add('green');
+      fear.textContent = 'low';
+      fear.classList.add('green');
+      comm.textContent = "Rock has resumed its relaxed state. (It is, however, remembering this.)";
+    }
+
+    rock.addEventListener('click', function () { flinch(); playBwoomp(); });
+    rock.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flinch(); playBwoomp(); }
+    });
+  }
+
+  // BWOOMP button
+  var bbtn = document.getElementById('bwoomp-btn');
+  if (bbtn) {
+    bbtn.addEventListener('click', function () {
+      playBwoomp();
+      bbtn.classList.add('pressed');
+      setTimeout(function () { bbtn.classList.remove('pressed'); }, 140);
+      var rect = bbtn.getBoundingClientRect();
+      var parent = bbtn.offsetParent || bbtn.parentElement;
+      var prect = parent.getBoundingClientRect();
+      spawnBurst(
+        (rect.left - prect.left) + rect.width / 2,
+        (rect.top  - prect.top),
+        parent
+      );
+      var r = document.getElementById('flinch-rock');
+      if (r) r.click();
+    });
+  }
+
+  // Redaction reveals
+  document.querySelectorAll('.redact').forEach(function (el) {
+    var reveal = el.getAttribute('data-reveal') || el.textContent;
+    el.addEventListener('click', function () {
+      if (el.classList.contains('revealed')) {
+        el.classList.remove('revealed');
+      } else {
+        el.classList.add('revealed');
+        el.textContent = reveal;
+      }
+      // The Rock reveal — clicking any rock-reveal reveals all of them + image
+      if (el.classList.contains('rock-reveal')) {
+        var allRock = document.querySelectorAll('.rock-reveal');
+        var isRevealing = el.classList.contains('revealed');
+        allRock.forEach(function (r) {
+          if (r !== el) {
+            var rReveal = r.getAttribute('data-reveal') || r.textContent;
+            if (isRevealing) {
+              r.classList.add('revealed');
+              r.textContent = rReveal;
+            } else {
+              r.classList.remove('revealed');
+            }
+          }
+        });
+        var img = document.getElementById('the-rock-img');
+        if (img) {
+          if (isRevealing) {
+            img.style.opacity = '1';
+            img.style.transform = 'translateY(0)';
+          } else {
+            img.style.opacity = '0';
+            img.style.transform = 'translateY(40px)';
+          }
+        }
+      }
+    });
+    el.style.cursor = 'pointer';
+    el.title = 'click to un-redact';
+  });
+})();
+</script>
+
+</body>
+</html>
