@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ROCK RUN — THE GREAT ESCAPE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Old+Standard+TT:wght@400;700&family=Special+Elite&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+:root {
+  --paper: #f5f0dc;
+  --ink: #1a1410;
+  --red: #c8201f;
+  --ink-soft: #6a5a4a;
+  --green: #2a7a2a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  background: var(--ink);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* header */
+.header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.header-left {
+  font-family: 'Special Elite', cursive;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+.header-left .stamped {
+  color: var(--red);
+  border: 1.5px solid var(--red);
+  padding: 1px 6px;
+  margin-right: 6px;
+  font-size: 10px;
+}
+.header-right {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--paper);
+}
+
+/* canvas */
+#game {
+  flex: 1;
+  display: block;
+  width: 100%;
+  background: var(--paper);
+}
+
+/* overlays */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px 20px;
+}
+.overlay.show { display: flex; }
+
+#start-screen {
+  background: var(--paper);
+}
+#game-over-screen {
+  background: rgba(26,20,16,0.92);
+}
+
+.ov-title {
+  font-family: 'Old Standard TT', serif;
+  font-size: clamp(32px, 8vw, 56px);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.ov-title .hl { background: #ffe14d; padding: 0 4px; }
+
+.ov-sub {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(14px, 4vw, 20px);
+  color: var(--ink-soft);
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.ov-btn {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  font-family: 'Special Elite', cursive;
+  font-size: 18px;
+  letter-spacing: 3px;
+  padding: 16px 36px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.ov-btn:active { background: var(--red); }
+
+.ov-hint {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+/* game over specifics */
+#game-over-screen .ov-title { color: var(--paper); }
+#game-over-screen .ov-sub { color: #a89878; }
+#game-over-screen .ov-btn { background: var(--red); }
+#game-over-screen .ov-hint { color: #8a7a6a; }
+
+.go-stamp {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(24px, 6vw, 36px);
+  color: var(--red);
+  border: 3px solid var(--red);
+  padding: 6px 20px;
+  transform: rotate(-8deg);
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+}
+
+.score-big {
+  font-family: 'Old Standard TT', serif;
+  font-size: clamp(48px, 12vw, 72px);
+  font-weight: 700;
+  color: #ffe14d;
+  line-height: 1;
+}
+.score-label {
+  font-family: 'Special Elite', cursive;
+  font-size: 14px;
+  color: #8a7a6a;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+/* banner */
+.banner {
+  background: var(--ink);
+  color: var(--ink-soft);
+  font-family: 'Special Elite', cursive;
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.pulse-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: blink 1.5s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.2} }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left"><span class="stamped">ESCAPE</span> ROCK RUN</div>
+  <div class="header-right" id="hud-score">0m</div>
+</div>
+
+<canvas id="game"></canvas>
+
+<div class="banner">
+  <span><span class="pulse-dot"></span>TAP TO JUMP</span>
+  <span id="hud-best">BEST: 0m</span>
+</div>
+
+<!-- START SCREEN -->
+<div class="overlay show" id="start-screen">
+  <div class="ov-title">ROCK <span class="hl">RUN</span></div>
+  <div class="ov-sub">
+    A squishy rock has been spotted.<br>
+    The humans are coming.<br>
+    <strong style="color:var(--red);">RUN.</strong>
+  </div>
+  <button class="ov-btn" id="btn-start">TAP TO RUN</button>
+  <div class="ov-hint">
+    Tap to jump over humans.<br>
+    Swipe down to slide under drones.
+  </div>
+</div>
+
+<!-- GAME OVER SCREEN -->
+<div class="overlay" id="game-over-screen">
+  <div class="go-stamp">CAUGHT!</div>
+  <div class="score-big" id="go-score">0</div>
+  <div class="score-label">METERS BEFORE CAPTURE</div>
+  <div class="ov-sub" id="go-message" style="max-width:320px;"></div>
+  <button class="ov-btn" id="btn-retry">RUN AGAIN</button>
+  <div class="ov-hint" id="go-best"></div>
+</div>
+
+<script>
+(function () {
+  // ── CANVAS SETUP ──
+  var canvas = document.getElementById('game');
+  var ctx = canvas.getContext('2d');
+  var W, H, scale;
+  var GROUND_Y;
+
+  function resize() {
+    var header = document.querySelector('.header');
+    var banner = document.querySelector('.banner');
+    var hh = header.offsetHeight;
+    var bh = banner.offsetHeight;
+    W = window.innerWidth;
+    H = window.innerHeight - hh - bh;
+    canvas.width = W * 2;
+    canvas.height = H * 2;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(2, 0, 0, 2, 0, 0);
+    scale = Math.min(W / 400, H / 700);
+    GROUND_Y = H * 0.78;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ── GAME STATE ──
+  var STATE = 'menu'; // menu, playing, dead
+  var score = 0;
+  var bestScore = parseInt(localStorage.getItem('rockrun-best') || '0');
+  var speed = 3.5;
+  var frame = 0;
+  var rock = {};
+  var obstacles = [];
+  var particles = [];
+  var bgElements = []; // background decorations
+  var groundOffset = 0;
+
+  // ── ROCK CHARACTER ──
+  function resetRock() {
+    rock = {
+      x: W * 0.18,
+      y: GROUND_Y,
+      w: Math.max(36, W * 0.1),
+      h: Math.max(36, W * 0.1),
+      vy: 0,
+      grounded: true,
+      sliding: false,
+      slideTimer: 0,
+      tension: 0,    // 0=squishy, 1=hard
+      squishPhase: 0,
+      alive: true
+    };
+  }
+
+  // ── OBSTACLE TYPES ──
+  var TYPES = [
+    { name: 'hiker',     w: 30, h: 60, ground: true,  speed: 0 },
+    { name: 'geologist',  w: 35, h: 55, ground: true,  speed: 0 },
+    { name: 'child',     w: 22, h: 40, ground: true,  speed: 0 },
+    { name: 'drone',     w: 40, h: 25, ground: false, speed: 0.5 },
+    { name: 'debeers',   w: 38, h: 58, ground: true,  speed: 0.3 },
+  ];
+
+  function spawnObstacle() {
+    var type = TYPES[Math.floor(Math.random() * TYPES.length)];
+    var s = scale;
+    var ow = type.w * s;
+    var oh = type.h * s;
+    var oy = type.ground ? GROUND_Y - oh : GROUND_Y - oh - (rock.h * 1.1) - Math.random() * 20;
+    obstacles.push({
+      type: type,
+      x: W + 20,
+      y: oy,
+      w: ow,
+      h: oh,
+      extraSpeed: type.speed * s,
+      passed: false
+    });
+  }
+
+  // ── CONTROLS ──
+  var touchStartY = 0;
+  var touchStartTime = 0;
+
+  document.addEventListener('touchstart', function (e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+    if (STATE === 'playing') {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', function (e) {
+    if (STATE !== 'playing') return;
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    var dt = Date.now() - touchStartTime;
+
+    if (dy > 40 && dt < 300) {
+      // swipe down = slide
+      if (rock.grounded && !rock.sliding) {
+        rock.sliding = true;
+        rock.slideTimer = 25;
+      }
+    } else {
+      // tap = jump
+      if (rock.grounded) {
+        rock.vy = -12 * scale;
+        rock.grounded = false;
+      }
+    }
+  });
+
+  // keyboard for desktop testing
+  document.addEventListener('keydown', function (e) {
+    if (STATE !== 'playing') return;
+    if (e.code === 'Space' || e.code === 'ArrowUp') {
+      if (rock.grounded) {
+        rock.vy = -12 * scale;
+        rock.grounded = false;
+      }
+    }
+    if (e.code === 'ArrowDown') {
+      if (rock.grounded && !rock.sliding) {
+        rock.sliding = true;
+        rock.slideTimer = 25;
+      }
+    }
+  });
+
+  // ── BUTTONS ──
+  document.getElementById('btn-start').addEventListener('click', startGame);
+  document.getElementById('btn-retry').addEventListener('click', startGame);
+
+  function startGame() {
+    document.getElementById('start-screen').classList.remove('show');
+    document.getElementById('game-over-screen').classList.remove('show');
+    STATE = 'playing';
+    score = 0;
+    speed = 3.5;
+    frame = 0;
+    obstacles = [];
+    particles = [];
+    resetRock();
+    updateHUD();
+    loop();
+  }
+
+  // ── MAIN LOOP ──
+  var lastTime = 0;
+  var spawnTimer = 0;
+  var minSpawnInterval = 80;
+
+  function loop() {
+    if (STATE !== 'playing') return;
+    requestAnimationFrame(loop);
+    frame++;
+
+    // speed ramp
+    speed = 3.5 + score * 0.003;
+    var spd = speed * scale;
+
+    // score
+    score += speed * 0.08;
+
+    // spawn obstacles
+    spawnTimer++;
+    var interval = Math.max(minSpawnInterval - score * 0.15, 35);
+    if (spawnTimer > interval) {
+      spawnObstacle();
+      spawnTimer = 0;
+    }
+
+    // ── UPDATE ROCK ──
+    // gravity
+    if (!rock.grounded) {
+      rock.vy += 0.6 * scale;
+      rock.y += rock.vy;
+      if (rock.y >= GROUND_Y) {
+        rock.y = GROUND_Y;
+        rock.vy = 0;
+        rock.grounded = true;
+      }
+    }
+
+    // sliding
+    if (rock.sliding) {
+      rock.slideTimer--;
+      if (rock.slideTimer <= 0) rock.sliding = false;
+    }
+
+    // squish animation
+    rock.squishPhase += 0.12;
+
+    // tension: increases when obstacles are close
+    var closestDist = 999;
+    for (var i = 0; i < obstacles.length; i++) {
+      var d = obstacles[i].x - rock.x;
+      if (d > 0 && d < closestDist) closestDist = d;
+    }
+    var tensionTarget = closestDist < W * 0.35 ? 1 - (closestDist / (W * 0.35)) : 0;
+    rock.tension += (tensionTarget - rock.tension) * 0.1;
+
+    // ── UPDATE OBSTACLES ──
+    for (var i = obstacles.length - 1; i >= 0; i--) {
+      var o = obstacles[i];
+      o.x -= spd + o.extraSpeed;
+
+      // collision
+      var rx = rock.x - rock.w * 0.35;
+      var ry = rock.sliding ? rock.y - rock.h * 0.35 : rock.y - rock.h;
+      var rw = rock.w * 0.7;
+      var rh = rock.sliding ? rock.h * 0.4 : rock.h;
+
+      if (rx < o.x + o.w && rx + rw > o.x && ry < o.y + o.h && ry + rh > o.y) {
+        die();
+        return;
+      }
+
+      // remove off screen
+      if (o.x + o.w < -20) {
+        obstacles.splice(i, 1);
+      }
+    }
+
+    // ── UPDATE PARTICLES ──
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.3;
+      p.life--;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+
+    // ground offset
+    groundOffset = (groundOffset + spd) % (20 * scale);
+
+    // ── DRAW ──
+    draw(spd);
+    updateHUD();
+  }
+
+  // ── DRAW ──
+  function draw(spd) {
+    ctx.clearRect(0, 0, W, H);
+
+    // background
+    ctx.fillStyle = '#f5f0dc';
+    ctx.fillRect(0, 0, W, H);
+
+    // sky gradient
+    var grad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
+    grad.addColorStop(0, '#e8dcc4');
+    grad.addColorStop(1, '#f5f0dc');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, GROUND_Y);
+
+    // distant dashes (parallax)
+    ctx.strokeStyle = 'rgba(26,20,16,0.06)';
+    ctx.lineWidth = 1;
+    var dashOff = (frame * spd * 0.1) % 60;
+    for (var i = 0; i < 8; i++) {
+      var dy = GROUND_Y * 0.3 + i * (GROUND_Y * 0.08);
+      ctx.setLineDash([20, 40]);
+      ctx.lineDashOffset = -dashOff * (0.5 + i * 0.1);
+      ctx.beginPath();
+      ctx.moveTo(0, dy);
+      ctx.lineTo(W, dy);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    // ground line
+    ctx.strokeStyle = '#1a1410';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND_Y);
+    ctx.lineTo(W, GROUND_Y);
+    ctx.stroke();
+
+    // ground dashes
+    ctx.strokeStyle = 'rgba(26,20,16,0.3)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 8]);
+    ctx.lineDashOffset = -groundOffset;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND_Y + 8);
+    ctx.lineTo(W, GROUND_Y + 8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ground fill
+    ctx.fillStyle = 'rgba(26,20,16,0.04)';
+    ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+
+    // dust particles behind rock
+    if (rock.grounded && STATE === 'playing') {
+      for (var d = 0; d < 2; d++) {
+        particles.push({
+          x: rock.x - rock.w * 0.3 + Math.random() * 10,
+          y: GROUND_Y - Math.random() * 5,
+          vx: -Math.random() * 2 - 1,
+          vy: -Math.random() * 2,
+          life: 15 + Math.random() * 10
+        });
+      }
+    }
+
+    // draw particles
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      var alpha = p.life / 25;
+      ctx.fillStyle = 'rgba(26,20,16,' + (alpha * 0.2) + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2 + (1 - alpha) * 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // draw obstacles
+    for (var i = 0; i < obstacles.length; i++) {
+      drawObstacle(obstacles[i]);
+    }
+
+    // draw rock
+    drawRock();
+
+    // score distance markers
+    ctx.fillStyle = 'rgba(26,20,16,0.08)';
+    ctx.font = (10 * scale) + 'px "Special Elite"';
+    var markerBase = Math.floor(score / 50) * 50;
+    for (var m = 0; m < 5; m++) {
+      var mVal = markerBase + m * 50;
+      var mX = W - ((score - mVal) / 50) * W * 0.5;
+      if (mX > 0 && mX < W) {
+        ctx.fillText(mVal + 'm', mX, GROUND_Y + 22);
+      }
+    }
+  }
+
+  // ── DRAW ROCK ──
+  function drawRock() {
+    var t = rock.tension;
+    var rw = rock.w;
+    var rh = rock.h;
+    var rx = rock.x;
+    var ry = rock.y;
+
+    ctx.save();
+
+    if (rock.sliding) {
+      // flattened when sliding
+      ctx.translate(rx, ry);
+      ctx.scale(1.4, 0.45);
+      ctx.translate(-rx, -ry);
+      ry = ry - rh * 0.15;
+    }
+
+    // squish wobble when relaxed
+    var wobbleX = 1 + Math.sin(rock.squishPhase) * 0.06 * (1 - t);
+    var wobbleY = 1 - Math.sin(rock.squishPhase) * 0.06 * (1 - t);
+
+    var cx = rx;
+    var cy = ry - rh * 0.5;
+
+    // body color based on tension
+    var bodyR = Math.round(138 - t * 30);
+    var bodyG = Math.round(122 - t * 30 + (1 - t) * 30);
+    var bodyB = Math.round(90 - t * 30);
+    var bodyColor = 'rgb(' + bodyR + ',' + bodyG + ',' + bodyB + ')';
+
+    // shadow
+    ctx.fillStyle = 'rgba(26,20,16,0.12)';
+    ctx.beginPath();
+    ctx.ellipse(rx, ry + 2, rw * 0.45 * wobbleX, rh * 0.12, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // body
+    ctx.fillStyle = bodyColor;
+    ctx.strokeStyle = '#1a1410';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rw * 0.45 * wobbleX, rh * 0.48 * wobbleY, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // stress cracks when tense
+    if (t > 0.6) {
+      ctx.strokeStyle = 'rgba(26,20,16,' + ((t - 0.6) / 0.4 * 0.4) + ')';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.moveTo(cx - rw * 0.15, cy - rh * 0.25);
+      ctx.lineTo(cx - rw * 0.05, cy - rh * 0.05);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx + rw * 0.2, cy - rh * 0.22);
+      ctx.lineTo(cx + rw * 0.1, cy - rh * 0.02);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // eyes
+    var eyeSpread = rw * 0.14;
+    var eyeY = cy - rh * 0.05;
+    var eyeH = rh * (0.1 + t * 0.06); // taller when scared
+    var eyeW = rw * 0.08;
+    var pupilR = rw * (0.04 + t * 0.02);
+
+    // left eye
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.ellipse(cx - eyeSpread, eyeY, eyeW, eyeH, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#1a1410';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // pupil
+    ctx.fillStyle = '#1a1410';
+    ctx.beginPath();
+    ctx.arc(cx - eyeSpread + 1, eyeY + 1, pupilR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // right eye
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.ellipse(cx + eyeSpread, eyeY, eyeW, eyeH, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#1a1410';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#1a1410';
+    ctx.beginPath();
+    ctx.arc(cx + eyeSpread + 1, eyeY + 1, pupilR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // eyebrows
+    ctx.strokeStyle = '#1a1410';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (t > 0.5) {
+      // scared raised brows
+      ctx.moveTo(cx - eyeSpread - eyeW, eyeY - eyeH - rh * 0.04);
+      ctx.quadraticCurveTo(cx - eyeSpread, eyeY - eyeH - rh * 0.1, cx - eyeSpread + eyeW, eyeY - eyeH - rh * 0.02);
+    } else {
+      // relaxed
+      ctx.moveTo(cx - eyeSpread - eyeW, eyeY - eyeH - rh * 0.02);
+      ctx.quadraticCurveTo(cx - eyeSpread, eyeY - eyeH - rh * 0.04, cx - eyeSpread + eyeW, eyeY - eyeH - rh * 0.02);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    if (t > 0.5) {
+      ctx.moveTo(cx + eyeSpread - eyeW, eyeY - eyeH - rh * 0.02);
+      ctx.quadraticCurveTo(cx + eyeSpread, eyeY - eyeH - rh * 0.1, cx + eyeSpread + eyeW, eyeY - eyeH - rh * 0.04);
+    } else {
+      ctx.moveTo(cx + eyeSpread - eyeW, eyeY - eyeH - rh * 0.02);
+      ctx.quadraticCurveTo(cx + eyeSpread, eyeY - eyeH - rh * 0.04, cx + eyeSpread + eyeW, eyeY - eyeH - rh * 0.02);
+    }
+    ctx.stroke();
+
+    // mouth
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#1a1410';
+    ctx.beginPath();
+    var mouthY = cy + rh * 0.15;
+    var mouthW = rw * 0.1;
+    if (t > 0.6) {
+      // grimace
+      ctx.moveTo(cx - mouthW, mouthY + 2);
+      ctx.quadraticCurveTo(cx, mouthY - 4, cx + mouthW, mouthY + 2);
+    } else if (t < 0.2) {
+      // big smile
+      ctx.moveTo(cx - mouthW * 1.2, mouthY - 2);
+      ctx.quadraticCurveTo(cx, mouthY + rh * 0.1, cx + mouthW * 1.2, mouthY - 2);
+    } else {
+      // neutral
+      ctx.moveTo(cx - mouthW, mouthY);
+      ctx.quadraticCurveTo(cx, mouthY + 4, cx + mouthW, mouthY);
+    }
+    ctx.stroke();
+
+    // sweat when tense
+    if (t > 0.4) {
+      var sweatAlpha = (t - 0.4) / 0.6;
+      ctx.fillStyle = 'rgba(107,174,214,' + sweatAlpha * 0.7 + ')';
+      ctx.beginPath();
+      ctx.ellipse(cx + rw * 0.38, cy - rh * 0.15, 2 * scale, 3.5 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+      if (t > 0.7) {
+        ctx.beginPath();
+        ctx.ellipse(cx - rw * 0.36, cy - rh * 0.1, 1.5 * scale, 2.5 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // blush when relaxed
+    if (t < 0.25) {
+      var blushAlpha = (0.25 - t) / 0.25 * 0.35;
+      ctx.fillStyle = 'rgba(232,160,160,' + blushAlpha + ')';
+      ctx.beginPath();
+      ctx.ellipse(cx - rw * 0.28, cy + rh * 0.08, rw * 0.08, rh * 0.04, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(cx + rw * 0.28, cy + rh * 0.08, rw * 0.08, rh * 0.04, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  // ── DRAW OBSTACLE ──
+  function drawObstacle(o) {
+    var x = o.x;
+    var y = o.y;
+    var w = o.w;
+    var h = o.h;
+    var name = o.type.name;
+
+    ctx.save();
+    ctx.fillStyle = '#1a1410';
+    ctx.strokeStyle = '#1a1410';
+    ctx.lineWidth = 2;
+
+    if (name === 'hiker' || name === 'geologist' || name === 'debeers' || name === 'child') {
+      // human silhouette
+      var headR = w * 0.28;
+      var bodyTop = y + headR * 2.2;
+      var legBottom = y + h;
+      var hx = x + w / 2;
+
+      // head
+      ctx.beginPath();
+      ctx.arc(hx, y + headR + 2, headR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // body
+      ctx.lineWidth = w * 0.18;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(hx, bodyTop - headR * 0.5);
+      ctx.lineTo(hx, legBottom - h * 0.4);
+      ctx.stroke();
+
+      // legs (walking animation)
+      var legPhase = frame * 0.15;
+      var legSwing = h * 0.15;
+      ctx.lineWidth = w * 0.14;
+      ctx.beginPath();
+      ctx.moveTo(hx, legBottom - h * 0.4);
+      ctx.lineTo(hx - legSwing * Math.sin(legPhase), legBottom);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(hx, legBottom - h * 0.4);
+      ctx.lineTo(hx + legSwing * Math.sin(legPhase), legBottom);
+      ctx.stroke();
+
+      // arms
+      ctx.lineWidth = w * 0.12;
+      ctx.beginPath();
+      ctx.moveTo(hx, bodyTop);
+      ctx.lineTo(hx - w * 0.4, bodyTop + h * 0.15);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(hx, bodyTop);
+      ctx.lineTo(hx + w * 0.4, bodyTop + h * 0.15);
+      ctx.stroke();
+
+      // type-specific details
+      if (name === 'geologist') {
+        // hammer in hand
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(hx + w * 0.4, bodyTop + h * 0.15);
+        ctx.lineTo(hx + w * 0.55, bodyTop - h * 0.05);
+        ctx.stroke();
+        ctx.fillRect(hx + w * 0.45, bodyTop - h * 0.1, w * 0.22, w * 0.15);
+      }
+
+      if (name === 'debeers') {
+        // hat (top hat)
+        ctx.fillRect(hx - headR * 1.1, y - headR * 0.2, headR * 2.2, 3);
+        ctx.fillRect(hx - headR * 0.7, y - headR * 1.2, headR * 1.4, headR * 1.1);
+      }
+
+      if (name === 'child') {
+        // smaller, no special accessory, just the proportions handle it
+      }
+
+      // label
+      ctx.font = Math.max(8, 9 * scale) + 'px "Special Elite"';
+      ctx.fillStyle = 'rgba(26,20,16,0.5)';
+      ctx.textAlign = 'center';
+      var labels = {
+        hiker: 'HIKER',
+        geologist: 'GEOLOGIST',
+        child: 'CHILD',
+        debeers: 'DE BEERS'
+      };
+      ctx.fillText(labels[name] || '', hx, y - 4);
+      ctx.textAlign = 'left';
+
+    } else if (name === 'drone') {
+      // drone silhouette
+      var dx = x + w / 2;
+      var dy = y + h / 2;
+      var bob = Math.sin(frame * 0.2) * 3;
+
+      ctx.fillStyle = '#1a1410';
+      // body
+      ctx.fillRect(dx - w * 0.25, dy + bob - h * 0.15, w * 0.5, h * 0.3);
+      // arms
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(dx - w * 0.25, dy + bob);
+      ctx.lineTo(dx - w * 0.5, dy + bob - h * 0.25);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(dx + w * 0.25, dy + bob);
+      ctx.lineTo(dx + w * 0.5, dy + bob - h * 0.25);
+      ctx.stroke();
+      // propellers
+      var propPhase = frame * 0.8;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(dx - w * 0.5 - 8 * Math.cos(propPhase), dy + bob - h * 0.25);
+      ctx.lineTo(dx - w * 0.5 + 8 * Math.cos(propPhase), dy + bob - h * 0.25);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(dx + w * 0.5 - 8 * Math.cos(propPhase + 1), dy + bob - h * 0.25);
+      ctx.lineTo(dx + w * 0.5 + 8 * Math.cos(propPhase + 1), dy + bob - h * 0.25);
+      ctx.stroke();
+
+      // camera lens (red)
+      ctx.fillStyle = '#c8201f';
+      ctx.beginPath();
+      ctx.arc(dx, dy + bob + h * 0.15, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = Math.max(8, 9 * scale) + 'px "Special Elite"';
+      ctx.fillStyle = 'rgba(26,20,16,0.5)';
+      ctx.textAlign = 'center';
+      ctx.fillText('DRONE', dx, y - 4);
+      ctx.textAlign = 'left';
+    }
+
+    ctx.restore();
+  }
+
+  // ── DIE ──
+  var dieMessages = [
+    "The rock was spotted in its natural squishy state.",
+    "A geologist made eye contact. The rock froze.",
+    "Caught mid-wobble. The cover is blown.",
+    "The rock tried to tense up but was too slow.",
+    "Observed. Documented. Filed under 'SOFT'.",
+    "De Beers sends their regards.",
+    "The rock's disguise failed. It was visibly jiggly.",
+    "A child poked it. It was warm.",
+    "Drone footage captured everything. It's over.",
+    "The rock relaxed for one second too long.",
+  ];
+
+  function die() {
+    STATE = 'dead';
+    rock.alive = false;
+    var finalScore = Math.floor(score);
+
+    if (finalScore > bestScore) {
+      bestScore = finalScore;
+      localStorage.setItem('rockrun-best', bestScore);
+    }
+
+    // show game over
+    setTimeout(function () {
+      document.getElementById('go-score').textContent = finalScore + 'm';
+      document.getElementById('go-message').textContent = dieMessages[Math.floor(Math.random() * dieMessages.length)];
+      document.getElementById('go-best').textContent = 'BEST: ' + bestScore + 'm';
+      document.getElementById('game-over-screen').classList.add('show');
+    }, 400);
+  }
+
+  // ── HUD ──
+  function updateHUD() {
+    document.getElementById('hud-score').textContent = Math.floor(score) + 'm';
+    document.getElementById('hud-best').textContent = 'BEST: ' + bestScore + 'm';
+  }
+
+  // ── INIT ──
+  resetRock();
+  updateHUD();
+  // draw initial frame
+  draw(0);
+
+})();
+</script>
+</body>
+</html>
